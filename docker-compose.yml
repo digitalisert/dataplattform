@@ -22,5 +22,26 @@ services:
     restart:
       always
 
+  drupal:
+    build: drupal
+    ports:
+      - 8181:80
+    volumes:
+      - ./drupal/config/sync:/opt/drupal/config/sync
+      - ./drupal/sites/default/settings.local.php:/opt/drupal/web/sites/default/settings.local.php
+    environment:
+      - DRUPAL_DATABASE_NAME
+      - DRUPAL_DATABASE_USERNAME
+      - DRUPAL_DATABASE_PASSWORD
+      - DRUPAL_DATABASE_HOST
+      - DRUPAL_DATABASE_PORT
+      - DRUPAL_HASH_SALT
+
+  postgres:
+    image: postgres:13.3
+    environment:
+      - POSTGRES_PASSWORD
+    restart: always
+
 volumes:
   ravendata:

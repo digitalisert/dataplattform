@@ -39,9 +39,12 @@ services:
 
   postgres:
     image: postgres:13.3
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD
     restart: always
 
 volumes:
   ravendata:
+  pgdata:

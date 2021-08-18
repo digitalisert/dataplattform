@@ -6,4 +6,4 @@ COPY bin.tmp/net5.0/NetTopologySuite.dll /opt/RavenDB/Server/NetTopologySuite.dl
 COPY bin.tmp/net5.0/ProjNET.dll /opt/RavenDB/Server/ProjNET.dll
 COPY bin.tmp/net5.0/SmartFormat.dll /opt/RavenDB/Server/SmartFormat.dll
 
-COPY bin.tmp/net5.0/ravendb.dll /opt/RavenDB/Server/ravendb.dll
+COPY bin.tmp/net5.0/Digitalisert.Dataplattform.ResourceModel.dll /opt/RavenDB/Server/Digitalisert.Dataplattform.ResourceModel.dll

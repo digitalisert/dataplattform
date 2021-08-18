@@ -8,7 +8,7 @@ using NetTopologySuite.IO;
 using ProjNet.CoordinateSystems;
 using ProjNet.CoordinateSystems.Transformations;
 
-namespace Digitalisert.Dataplattform.Raven
+namespace Digitalisert.Dataplattform
 {
     public static class ResourceModelExtensions
     {
@@ -102,7 +102,7 @@ namespace Digitalisert.Dataplattform.Raven
             }
         }
 
-        public static IEnumerable<string> ResourceFormat(string value, dynamic resource, dynamic resourceproperty = null)
+        public static IEnumerable<string> ResourceFormat(string value, dynamic resource, dynamic resourceproperty)
         {
             var formatter = SmartFormat.Smart.CreateDefaultSmartFormat();
             formatter.Parser.AddAdditionalSelectorChars("æøåÆØÅ");

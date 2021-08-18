@@ -2,4 +2,5 @@
 [Oo]bj.tmp
 .DS_Store
 license.json
-.vscode/*
+.env
+.vscode

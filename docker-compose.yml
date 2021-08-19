@@ -6,6 +6,10 @@ services:
     ports:
       - 8080:8080
       - 38888:38888
+    networks:
+      - backend
+      - etl
+      - frontend
     environment:
       - RAVEN_ARGS=--log-to-console
       - RAVEN_Setup_Mode=None
@@ -22,10 +26,23 @@ services:
     restart:
       always
 
+  init:
+    build:
+      context: ravendb
+      target: resourcemodel
+    networks:
+      - backend
+    depends_on:
+      - ravendb
+    entrypoint: ["dotnet", "Digitalisert.Dataplattform.ResourceModel.dll"]
+
   drupal:
     build: drupal
     ports:
       - 8181:80
+    networks:
+      - backend
+      - frontend
     volumes:
       - ./drupal/config/sync:/opt/drupal/config/sync
       - ./drupal/sites/default/settings.local.php:/opt/drupal/web/sites/default/settings.local.php
@@ -37,14 +54,22 @@ services:
       - DRUPAL_DATABASE_HOST
       - DRUPAL_DATABASE_PORT
       - DRUPAL_HASH_SALT
+    restart: always
 
   postgres:
     image: postgres:13.3
+    networks:
+      - backend
     volumes:
       - pgdata:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD
     restart: always
+
+networks:
+  backend:
+  etl:
+  frontend:
 
 volumes:
   ravendata:

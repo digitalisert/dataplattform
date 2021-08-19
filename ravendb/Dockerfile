@@ -1,9 +1,23 @@
-FROM ravendb/ravendb:5.1.7-ubuntu.20.04-x64
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
+WORKDIR /app
 
-COPY bin.tmp/net5.0/Geohash.dll /opt/RavenDB/Server/Geohash.dll
-COPY bin.tmp/net5.0/MoreLinq.dll /opt/RavenDB/Server/MoreLinq.dll
-COPY bin.tmp/net5.0/NetTopologySuite.dll /opt/RavenDB/Server/NetTopologySuite.dll
-COPY bin.tmp/net5.0/ProjNET.dll /opt/RavenDB/Server/ProjNET.dll
-COPY bin.tmp/net5.0/SmartFormat.dll /opt/RavenDB/Server/SmartFormat.dll
+COPY *.csproj ./
+RUN dotnet restore
 
-COPY bin.tmp/net5.0/Digitalisert.Dataplattform.ResourceModel.dll /opt/RavenDB/Server/Digitalisert.Dataplattform.ResourceModel.dll
+COPY *.cs ./
+RUN dotnet publish -c Release -o out
+
+FROM mcr.microsoft.com/dotnet/runtime:5.0 AS resourcemodel
+WORKDIR /app
+COPY --from=build-env /app/out .
+
+FROM ravendb/ravendb:5.2.2-ubuntu.20.04-x64
+
+COPY --from=resourcemodel \
+    /app/Digitalisert.Dataplattform.ResourceModel.dll \
+    /app/Geohash.dll \
+    /app/MoreLinq.dll \
+    /app/NetTopologySuite.dll \
+    /app/ProjNET.dll \
+    /app/SmartFormat.dll \
+    /opt/RavenDB/Server/

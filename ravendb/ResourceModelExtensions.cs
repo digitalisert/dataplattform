@@ -66,6 +66,7 @@ namespace Digitalisert.Dataplattform
                             Value = (group.g.Key.Value != null) ? group.g.Key.Value : new string[] { },
                             Tags = tags.Union(new[] { (group.i == 0) ? "@first" : "", (group.i == groups.Count() - 1) ? "@last" : "" } ).Where(t => !String.IsNullOrWhiteSpace(t)),
                             Resources = (group.g.Key.Resources != null) ? group.g.Key.Resources : new object[] { },
+                            Properties = group.g.SelectMany(g => (IEnumerable<dynamic>)g.Properties).Distinct(),
                             From = (from.Any(f => f != prev)) ? from.Where(f => f != prev).Min() : prev,
                             Thru = (thru.Any(t => t != next)) ? thru.Where(t => t != next).Max() : next,
                             Source = new[] { source.FirstOrDefault(), source.LastOrDefault() }.Distinct()

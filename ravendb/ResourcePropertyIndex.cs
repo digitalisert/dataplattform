@@ -41,7 +41,12 @@ namespace Digitalisert.Dataplattform
                             Value = property.SelectMany(p => p.Value).Union(ontologyproperty.Value.SelectMany(v => ResourceFormat(v, resource, property))),
                             Tags = property.SelectMany(p => p.Tags).Union(ontologyproperty.Tags).Select(v => v).Distinct(),
                             Resources = (
-                                from propertyresource in property.SelectMany(p => p.Resources).Where(r => !String.IsNullOrEmpty(r.ResourceId))
+                                from propertyresource in property.SelectMany(p => p.Resources)
+                                where String.IsNullOrEmpty(propertyresource.ResourceId)
+                                select propertyresource
+                            ).Union(
+                                from propertyresource in property.SelectMany(p => p.Resources)
+                                where !String.IsNullOrEmpty(propertyresource.ResourceId)
                                 select new Resource {
                                     Context = propertyresource.Context ?? ontology.Context,
                                     ResourceId = propertyresource.ResourceId
@@ -129,7 +134,12 @@ namespace Digitalisert.Dataplattform
                             Value = property.SelectMany(p => p.Value).Union(ontologyproperty.Value.SelectMany(v => ResourceFormat(v, resource, property))),
                             Tags = property.SelectMany(p => p.Tags).Union(ontologyproperty.Tags).Select(v => v).Distinct(),
                             Resources = (
-                                from propertyresource in property.SelectMany(p => p.Resources).Where(r => !String.IsNullOrEmpty(r.ResourceId))
+                                from propertyresource in property.SelectMany(p => p.Resources)
+                                where String.IsNullOrEmpty(propertyresource.ResourceId)
+                                select propertyresource
+                            ).Union(
+                                from propertyresource in property.SelectMany(p => p.Resources)
+                                where !String.IsNullOrEmpty(propertyresource.ResourceId)
                                 select new Resource {
                                     Context = propertyresource.Context ?? ontology.Context,
                                     ResourceId = propertyresource.ResourceId

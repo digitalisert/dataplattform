@@ -38,10 +38,7 @@ namespace Digitalisert.Dataplattform
 
                         select new Property {
                             Name = ontologyproperty.Name,
-                            Value =
-                                from value in property.SelectMany(p => p.Value).Union(ontologyproperty.Value)
-                                from formattedvalue in ResourceFormat(value, resource, property)
-                                select formattedvalue,
+                            Value = property.SelectMany(p => p.Value).Union(ontologyproperty.Value.SelectMany(v => ResourceFormat(v, resource, property))),
                             Tags = property.SelectMany(p => p.Tags).Union(ontologyproperty.Tags).Select(v => v).Distinct(),
                             Resources = (
                                 from propertyresource in property.SelectMany(p => p.Resources).Where(r => !String.IsNullOrEmpty(r.ResourceId))
@@ -129,10 +126,7 @@ namespace Digitalisert.Dataplattform
 
                         select new Property {
                             Name = ontologyproperty.Name,
-                            Value =
-                                from value in property.SelectMany(p => p.Value).Union(ontologyproperty.Value)
-                                from formattedvalue in ResourceFormat(value, resource, property)
-                                select formattedvalue,
+                            Value = property.SelectMany(p => p.Value).Union(ontologyproperty.Value.SelectMany(v => ResourceFormat(v, resource, property))),
                             Tags = property.SelectMany(p => p.Tags).Union(ontologyproperty.Tags).Select(v => v).Distinct(),
                             Resources = (
                                 from propertyresource in property.SelectMany(p => p.Resources).Where(r => !String.IsNullOrEmpty(r.ResourceId))

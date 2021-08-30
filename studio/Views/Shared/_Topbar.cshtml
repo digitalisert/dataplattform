@@ -1,0 +1,54 @@
+@using System.Collections.Generic
+@using Digitalisert.Dataplattform.Studio.Models
+@model IEnumerable<ResourceModel.Resource>
+
+@{
+  string resourceSearch = ViewBag.ResourceSearch ?? "";
+}
+
+<div class="top-bar">
+  <div class="top-bar-left">
+    <ul class="dropdown menu" data-dropdown-menu>
+      <li class="menu-text">Digitalisert</li>
+
+      @foreach (var facet in ViewBag.ResourceFacet)
+      {
+        <li>
+          <a href="#">
+            @facet.Value.Name
+          </a>
+          <ul class="menu vertial">
+            @foreach(var value in facet.Value.Values)
+            {
+              var name = (facet.Value.Name == "Properties") ? "Properties[0].Name" : facet.Value.Name;
+              if (Context.Request.Query["resources[0]." + name] == value.Range)
+              {
+                <li class="is-active">
+                  <a href="/Studio/Resource">
+                    @value.Range
+                    <span class="badge secondary">@value.Count</span>
+                  </a>
+                </li>
+              }
+              else
+              {
+                <li>
+                  <a href="?resources[0].@(name)=@(value.Range)">
+                    @value.Range
+                    <span class="badge secondary">@value.Count</span>
+                  </a>
+                </li>
+              }
+            }
+          </ul>
+        </li>
+      }
+    </ul>
+  </div>
+  <form class="top-bar-right" action="/Studio/Resource">
+    <ul class="menu">
+      <li><input type="search" name="search" placeholder="Search..." value="@resourceSearch"></li>
+      <li><button type="submit" class="button">Search</button></li>
+    </ul>
+  </form>
+</div>

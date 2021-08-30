@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - studio</title>
+    <link rel="stylesheet" href="/static/node_modules/foundation-sites/dist/css/foundation.css" />
+    <link rel="stylesheet" href="/static/studio.css" />
+</head>
+<body>
+    @RenderBody()
+    <script src="/static/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="/static/node_modules/foundation-sites/dist/js/foundation.min.js"></script>
+    <script src="/static/studio.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

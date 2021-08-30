@@ -1,0 +1,65 @@
+@using System.Collections.Generic
+@using Digitalisert.Dataplattform.Studio.Models
+@model IEnumerable<ResourceModel.Resource>
+
+@{
+  Dictionary<string, string[]> highlightings = ViewBag.ResourceSearchHighlightings;
+}
+
+<ul class="accordion" data-accordion>
+  @foreach(var resource in Model)
+  {
+    <li class="accordion-item" data-accordion-item>
+      <a href="#" class="accordion-title">
+        <small class="subheader">@resource.Code?.FirstOrDefault()</small>
+        @resource.Title?.FirstOrDefault()
+        @if (resource.SubTitle.Any())
+        {
+          <small class="subheader">@resource.SubTitle.FirstOrDefault()</small>
+        }
+
+        @foreach (var type in resource.Type)
+        {
+          <span class="label primary float-right">@type</span>
+        }
+      </a>
+      <div class="accordion-content" data-tab-content>
+        <a href="/Studio/Resource/@(resource.Context)/@(resource.ResourceId)" class="h2">
+              <small>@resource.Code?.FirstOrDefault()</small>
+              @resource.Title?.FirstOrDefault()
+              @if (resource.SubTitle.Any())
+              {
+                <small>@resource.SubTitle.FirstOrDefault()</small>
+              }
+        </a>
+
+        <div class="float-right">
+          @foreach (var subType in resource.SubType ?? new string[] { })
+          {
+            <span class="label secondary">@subType</span>
+          }
+
+          @foreach (var tags in resource.Tags ?? new string[] { })
+          {
+            <span class="label">@tags</span>
+          }
+        </div>
+
+        @foreach (var body in resource.Body ?? new string[] { })
+        {
+          <p class="text-break">@body</p>
+        }
+
+        @if (resource.Id != null && highlightings.ContainsKey(resource.Id))
+        {
+          <small>
+            @foreach (var fragment in highlightings[resource.Id])
+            {
+              @Html.Raw(Markdig.Markdown.ToHtml(fragment));
+            }
+          </small>
+        }
+      </div>
+    </li>
+  }
+</ul>

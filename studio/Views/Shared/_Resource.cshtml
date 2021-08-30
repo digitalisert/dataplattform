@@ -1,0 +1,67 @@
+@using Digitalisert.Dataplattform.Studio.Models
+@model ResourceModel.Resource
+
+<h1>
+  @if (Model.Code.Any())
+  {
+    <small>@Model.Code.FirstOrDefault()</small>
+  }
+  @Model.Title?.FirstOrDefault()
+  @if (Model.SubTitle.Any())
+  {
+    <small>@Model.SubTitle.FirstOrDefault()</small>
+  }
+</h1>
+
+@foreach (var type in Model.Type)
+{
+    <a href="/Studio/Resource?resources[0].Type=@type" class="button primary">@type</a>
+}
+
+@foreach (var subType in Model.SubType ?? new string[] { })
+{
+    <a href="/Studio/Resource?resources[0].SubType=@subType" class="button secondary">@subType</a>
+}
+
+@foreach (var tags in Model.Tags ?? new string[] { })
+{
+    <a href="/Studio/Resource?resources[0].Tags=@tags" class="button">@tags</a>
+}
+
+@foreach (var status in Model.Status ?? new string[] { })
+{
+    <a href="/Studio/Resource?resources[0].Status=@status" class="button">@status</a>
+}
+
+@foreach (var body in Model.Body ?? new string[] { })
+{
+    <p>@body</p>
+}
+
+<dl>
+  @foreach (var property in Model.Properties)
+  {
+    <dt>@property.Name</dt>
+    <dd>
+      @foreach (var value in property.Value ?? new string[] { })
+      {
+        if (value.Length < 300)
+        {
+          <p>@value</p>
+        }
+        else
+        {
+          <p>
+            <span>@(value.Substring(0, 300))</span>
+            <span id="@(property.Name)-collapse" class="hide" data-toggler=".hide">@(value.Substring(300))</span>
+            <a data-toggle="@(property.Name)-collapse">...</a>
+          </p>
+        }
+      }
+      @if (property.Resources != null)
+      {
+        <partial name="~/Views/Shared/_Accordion.cshtml" model="property.Resources"/>
+      }
+    </dd>
+  }
+</dl>

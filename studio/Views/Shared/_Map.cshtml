@@ -1,0 +1,32 @@
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
+@model IEnumerable<ResourceModel.Resource>
+
+@if (Model.Skip(1).Any())
+{
+    <div id="map" class="responsive-embed widescreen">
+        @foreach (var resource in Model.Where(r => r.Tags.Contains("@wkt")))
+        {
+            <a href="/Studio/Resource/@resource.Context/@resource.ResourceId" data-resource="@resource.Context/@resource.ResourceId">@resource.Title?.FirstOrDefault()</a>
+        }
+    </div>
+}
+else if (Model.Any())
+{
+    <div id="map" class="responsive-embed widescreen" data-resource="@Model.First().Context/@Model.First().ResourceId">
+        @foreach (var resource in Model.SelectMany(r => r.Properties).SelectMany(p => p.Resources).Where(r => r.Tags.Contains("@wkt")))
+        {
+            <a href="/Studio/Resource/@resource.Context/@resource.ResourceId" data-resource="@resource.Context/@resource.ResourceId">@resource.Title.FirstOrDefault()</a>
+        }
+    </div>
+}
+
+@{
+    foreach(var fileInfo in new System.IO.DirectoryInfo(WebHostEnvironment.WebRootPath + "/static/map/build/static/css").GetFiles("*.css"))
+    {
+        <link rel="stylesheet" href="~/static/map/build/static/css/@(fileInfo.Name)" asp-append-version="true" />
+    }
+    foreach(var fileInfo in new System.IO.DirectoryInfo(WebHostEnvironment.WebRootPath + "/static/map/build/static/js").GetFiles("*.js"))
+    {
+        <script src="~/static/map/build/static/js/@(fileInfo.Name)" asp-append-version="true"></script>
+    }
+}

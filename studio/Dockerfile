@@ -1,0 +1,16 @@
+FROM dataplattform_static AS static
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
+WORKDIR /app
+
+COPY *.csproj ./
+RUN dotnet restore
+
+COPY . .
+RUN dotnet publish -c Release -o out --no-restore
+
+FROM mcr.microsoft.com/dotnet/aspnet:5.0
+WORKDIR /app
+COPY --from=build-env /app/out .
+COPY --from=static /usr/share/nginx/html/static wwwroot/static
+EXPOSE 80
+ENTRYPOINT ["dotnet", "studio.dll"]

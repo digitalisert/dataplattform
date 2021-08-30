@@ -42,6 +42,31 @@ services:
       - ravendb
     entrypoint: ["dotnet", "Digitalisert.Dataplattform.ResourceModel.dll"]
 
+  static:
+    build: static
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.static.rule=PathPrefix(`/static/`)
+    networks:
+      - frontend
+    restart: always
+
+  studio:
+    build: studio
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.studio.rule=PathPrefix(`/Studio/`)
+      - traefik.docker.network=dataplattform_frontend
+    networks:
+      - frontend
+      - backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT
+    depends_on:
+      - init
+      - static
+    restart: always
+
   drupal:
     build: drupal
     labels:

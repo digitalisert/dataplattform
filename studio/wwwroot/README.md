@@ -1,0 +1,1 @@
+Innhold fra ../static

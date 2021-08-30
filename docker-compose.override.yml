@@ -1,0 +1,7 @@
+version: "3"
+services:
+  ravendb:
+    build: ravendb
+    ports:
+      - 8080:8080
+      - 38888:38888

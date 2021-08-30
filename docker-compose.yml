@@ -1,11 +1,17 @@
 version: "3"
 
 services:
+  traefik:
+    image: traefik
+    command: --providers.docker --providers.docker.exposedbydefault=false
+    ports:
+      - 80:80
+    networks:
+      - frontend
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
   ravendb:
     build: ravendb
-    ports:
-      - 8080:8080
-      - 38888:38888
     networks:
       - backend
       - etl
@@ -38,8 +44,10 @@ services:
 
   drupal:
     build: drupal
-    ports:
-      - 8181:80
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.drupal.rule=PathPrefix(`/`)
+      - traefik.docker.network=dataplattform_frontend
     networks:
       - backend
       - frontend

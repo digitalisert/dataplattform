@@ -3,7 +3,23 @@
 @model IEnumerable<ResourceModel.Resource>
 
 @{
-  string resourceSearch = ViewBag.ResourceSearch ?? "";
+    string resourceSearch = ViewBag.ResourceSearch ?? "";
+
+    var parameters = Model.Select((resource, i) => new { resource, i }).SelectMany(r =>
+        (
+            (new[] { r.resource.Context ?? "" }).Where(t => t != "").Select(t => new { Name = "Context", Value = t, Index = r.i } )
+        ).Union(
+            (r.resource.Type ?? new string[] { }).Select(t => new { Name = "Type", Value = t, Index = r.i } )
+        ).Union(
+            (r.resource.SubType ?? new string[] { }).Select(t => new { Name = "SubType", Value = t, Index = r.i } )
+        ).Union(
+            (r.resource.Tags ?? new string[] { }).Select(t => new { Name = "Tags", Value = t, Index = r.i } )
+        ).Union(
+            (r.resource.Status?? new string[] { }).Select(t => new { Name = "Status", Value = t, Index = r.i } )
+        )
+    );
+
+    var search = (resourceSearch != "") ? new[] { "search=" + resourceSearch } : new string[] { };
 }
 
 <div class="top-bar">
@@ -21,24 +37,13 @@
             @foreach(var value in facet.Value.Values)
             {
               var name = (facet.Value.Name == "Properties") ? "Properties[0].Name" : facet.Value.Name;
-              if (Context.Request.Query["resources[0]." + name] == value.Range)
-              {
-                <li class="is-active">
-                  <a href="/Studio/Resource">
-                    @value.Range
-                    <span class="badge secondary">@value.Count</span>
-                  </a>
-                </li>
-              }
-              else
-              {
-                <li>
-                  <a href="?resources[0].@(name)=@(value.Range)">
-                    @value.Range
-                    <span class="badge secondary">@value.Count</span>
-                  </a>
-                </li>
-              }
+              var query = String.Join("&", parameters.Select(p => "resources[" + p.Index + "]." + p.Name + "=" + p.Value).Union(new[] { "resources[0]." + name + "=" + value.Range } ).Union(search));
+              <li>
+                <a href="?@query">
+                  @value.Range
+                  <span class="badge secondary">@value.Count</span>
+                </a>
+              </li>
             }
           </ul>
         </li>
@@ -46,6 +51,11 @@
     </ul>
   </div>
   <form class="top-bar-right" action="/Studio/Resource">
+    @foreach (var parameter in parameters)
+    {
+        <input type="hidden" name="resources[@parameter.Index].@parameter.Name" value="@parameter.Value" />
+    }
+
     <ul class="menu">
       <li><input type="search" name="search" placeholder="Search..." value="@resourceSearch"></li>
       <li><button type="submit" class="button">Search</button></li>

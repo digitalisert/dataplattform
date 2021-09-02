@@ -16,6 +16,8 @@ namespace Digitalisert.Dataplattform.Studio.Controllers
         [ViewData]
         public IEnumerable<ResourceModel.Resource> ResourceQuery { get; set; }
         [ViewData]
+        public IEnumerable<ResourceModel.Resource> ResourceCurrent { get; set; }
+        [ViewData]
         public string ResourceSearch { get; set; }
         [ViewData]
         public Dictionary<string, string[]> ResourceSearchHighlightings { get; set; }

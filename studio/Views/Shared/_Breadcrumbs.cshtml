@@ -1,0 +1,59 @@
+@using System.Collections.Generic
+@using System.Linq
+@using Digitalisert.Dataplattform.Studio.Models
+@model IEnumerable<ResourceModel.Resource>
+
+@{
+    string resourceSearch = ViewBag.ResourceSearch ?? "";
+    IEnumerable<ResourceModel.Resource> resourcecurrent = ViewBag.ResourceCurrent ?? new ResourceModel.Resource[] {};
+}
+
+@if (Model.Any())
+{
+    var crumbs = Model.Select((resource, i) => new { resource, i }).SelectMany(r =>
+        (
+            (new[] { r.resource.Context ?? "" }).Where(t => t != "").Select(t => new { Name = "Context", Value = t, Index = r.i } )
+        ).Union(
+            (r.resource.Type ?? new string[] { }).Select(t => new { Name = "Type", Value = t, Index = r.i } )
+        ).Union(
+            (r.resource.SubType ?? new string[] { }).Select(t => new { Name = "SubType", Value = t, Index = r.i } )
+        ).Union(
+            (r.resource.Tags ?? new string[] { }).Select(t => new { Name = "Tags", Value = t, Index = r.i } )
+        ).Union(
+            (r.resource.Status?? new string[] { }).Select(t => new { Name = "Status", Value = t, Index = r.i } )
+        ));
+
+    var search = (resourceSearch != "") ? new[] { "search=" + resourceSearch } : new string[] { };
+
+    <nav class="callout">
+        @foreach(var resource in Model.Select((r, i) => new { r, i }))
+        {
+            <ul class="breadcrumbs">
+                @foreach(var crumb in crumbs.Where(c => c.Index == resource.i).Select((c, i) => new { c, i }))
+                {
+                    var query = String.Join("&", crumbs.Where(c => c.Index == resource.i).Take(crumb.i + 1).Select(c => "resources[0]." + c.Name + "=" + c.Value).Union(search));
+                    var except = String.Join("&", crumbs.Where(c => !(c.Index == crumb.c.Index && c.Name == crumb.c.Name && c.Value == crumb.c.Value)).Select(c => "resources[" + c.Index + "]." + c.Name + "=" + c.Value).Union(search));
+                    <li><a href="?@query">@crumb.c.Value</a> <a href="?@except">x</a></li>
+                }
+                @if (resourceSearch != "")
+                {
+                    var except = String.Join("&", crumbs.Select(c => "resources[" + c.Index + "]." + c.Name + "=" + c.Value));
+                    <li>@resourceSearch <a href="?@except">x</a></li>
+                }
+            </ul>
+        }
+        @foreach (var resource in resourcecurrent)
+        {
+            <a href="/Studio/Resource/@(resource.Context)/@(resource.ResourceId)" class="h4">
+                <small>@resource.Code?.FirstOrDefault()</small>
+                @resource.Title?.FirstOrDefault()
+                @if (resource.SubTitle.Any())
+                {
+                    <small>@resource.SubTitle.FirstOrDefault()</small>
+                }
+            </a>
+            var except = String.Join("&", crumbs.Select(c => "resources[" + c.Index + "]." + c.Name + "=" + c.Value).Union(search));
+            <a href="/Studio/Resource?@except">x</a>
+        }
+    </nav>
+}

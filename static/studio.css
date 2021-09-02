@@ -1,6 +1,7 @@
 ﻿body { padding-top:0 }
 
 .top-bar .is-dropdown-submenu { z-index: 500; }
+.top-bar + .grid-container { margin-top: 1rem; }
 
 @media screen and (min-width: 64em) {
     #map.responsive-embed { padding-bottom: 33%; }

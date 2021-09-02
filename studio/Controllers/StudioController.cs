@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -13,6 +13,8 @@ namespace Digitalisert.Dataplattform.Studio.Controllers
 {
     public class StudioController : Controller
     {
+        [ViewData]
+        public IEnumerable<ResourceModel.Resource> ResourceQuery { get; set; }
         [ViewData]
         public string ResourceSearch { get; set; }
         [ViewData]
@@ -50,6 +52,7 @@ namespace Digitalisert.Dataplattform.Studio.Controllers
 
                 ResourceSearchHighlightings = (highlightings ?? new Highlightings("")).ResultIndents.ToDictionary(r => r, r => highlightings.GetFragments(r));
                 ResourceFacet = query.AggregateBy(ResourceModel.Facets).Execute();
+                ResourceQuery = resources ?? new Models.ResourceModel.Resource[] {};
 
                 return View(result);
             }
@@ -74,6 +77,7 @@ namespace Digitalisert.Dataplattform.Studio.Controllers
 
                 ResourceSearchHighlightings = (highlightings ?? new Highlightings("")).ResultIndents.ToDictionary(r => r, r => highlightings.GetFragments(r));
                 ResourceFacet = query.AggregateBy(ResourceModel.Facets).Execute();
+                ResourceQuery = resources ?? new Models.ResourceModel.Resource[] {};
 
                 return View((resources.Any()) ? result : resource);
             }

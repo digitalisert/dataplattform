@@ -6,7 +6,7 @@
     ViewData["Title"] = "Resource Page";
 }
 
-<partial name="~/Views/Shared/_Topbar.cshtml" />
+<partial name="~/Views/Shared/_Topbar.cshtml" model="ViewBag.ResourceQuery" />
 
 @if (Model.Any(r => r.Tags.Contains("@wkt")))
 {

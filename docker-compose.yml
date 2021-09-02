@@ -10,6 +10,7 @@ services:
       - frontend
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
   ravendb:
     build: ravendb
     networks:

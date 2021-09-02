@@ -80,6 +80,7 @@ namespace Digitalisert.Dataplattform.Studio.Controllers
                 ResourceSearchHighlightings = (highlightings ?? new Highlightings("")).ResultIndents.ToDictionary(r => r, r => highlightings.GetFragments(r));
                 ResourceFacet = query.AggregateBy(ResourceModel.Facets).Execute();
                 ResourceQuery = resources ?? new Models.ResourceModel.Resource[] {};
+                ResourceCurrent = resource;
 
                 return View((resources.Any()) ? result : resource);
             }

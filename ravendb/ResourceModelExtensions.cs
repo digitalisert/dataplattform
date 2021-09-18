@@ -16,7 +16,7 @@ namespace Digitalisert.Dataplattform
         {
             foreach(var propertyG in ((IEnumerable<dynamic>)properties).GroupBy(p => p.Name))
             {
-                var tags = propertyG.SelectMany(p => (IEnumerable<dynamic>)p.Tags).Distinct().Select(t => t.ToString()).Except(new[] { "@first", "@last" });
+                var tags = propertyG.SelectMany(p => (IEnumerable<dynamic>)p.Tags).Distinct().Select(t => t.ToString());
                 var value = propertyG.SelectMany(p => (IEnumerable<dynamic>)p.Value).Distinct();
 
                 if (tags.Intersect(new[] { "@sum", "@min", "@max", "@average" }).Any())
@@ -60,11 +60,12 @@ namespace Digitalisert.Dataplattform
                         var from = group.g.Select(p => p.From).Where(f => f != null);
                         var thru = group.g.Select(p => p.Thru).Where(t => t != null);
                         var source = group.g.SelectMany(g => (IEnumerable<dynamic>)g.Source);
+                        var historytags = group.g.SelectMany(p => (IEnumerable<dynamic>)p.Tags).Distinct().Select(t => t.ToString()).Except(new[] { "@first", "@last" });
 
                         yield return new {
                             Name = propertyG.Key,
                             Value = (group.g.Key.Value != null) ? group.g.Key.Value : new string[] { },
-                            Tags = tags.Union(new[] { (group.i == 0) ? "@first" : "", (group.i == groups.Count() - 1) ? "@last" : "" } ).Where(t => !String.IsNullOrWhiteSpace(t)),
+                            Tags = historytags.Union(new[] { (group.i == 0) ? "@first" : "", (group.i == groups.Count() - 1) ? "@last" : "" } ).Where(t => !String.IsNullOrWhiteSpace(t)),
                             Resources = (group.g.Key.Resources != null) ? group.g.Key.Resources : new object[] { },
                             Properties = group.g.SelectMany(g => (IEnumerable<dynamic>)g.Properties).Distinct(),
                             From = (from.Any(f => f != prev)) ? from.Where(f => f != prev).Min() : prev,

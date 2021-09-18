@@ -45,55 +45,86 @@ namespace Digitalisert.Dataplattform
                                 where String.IsNullOrEmpty(propertyresource.ResourceId)
                                 select propertyresource
                             ).Union(
-                                from propertyresource in property.SelectMany(p => p.Resources)
-                                where !String.IsNullOrEmpty(propertyresource.ResourceId)
-                                select new Resource {
-                                    Context = propertyresource.Context ?? ontology.Context,
-                                    ResourceId = propertyresource.ResourceId
-                                }
-                            ).Union(
-                                from ontologyresource in ontologyproperty.Resources
-                                from resourceId in
-                                    from resourceIdValue in ontologyresource.Properties.Where(p => p.Name == "@resourceId").SelectMany(p => p.Value)
-                                    from resourceIdFormattedValue in ResourceFormat(resourceIdValue, resource, property)
-                                    where LoadDocument<ResourceMappingReferences>("ResourceMappingReferences/" + (ontologyresource.Context ?? ontology.Context) + "/" + resourceIdFormattedValue) != null
-                                    select resourceIdFormattedValue
-                                select new Resource {
-                                    Context = ontologyresource.Context ?? ontology.Context,
-                                    ResourceId = resourceId
-                                }
-                            ).Union(
-                                from ontologyresource in ontologyproperty.Resources
-                                from resourceId in
-                                    from resourceIdValue in ontologyresource.Properties.Where(p => p.Name == "@resourceId").SelectMany(p => p.Value)
-                                    from resourceIdFormattedValue in ResourceFormat(resourceIdValue, resource, property)
-                                    where LoadDocument<ResourceMappingReferences>("ResourceMappingReferences/" + (ontologyresource.Context ?? ontology.Context) + "/" + resourceIdFormattedValue) != null
-                                    select resourceIdFormattedValue
-                                let aliasreference = LoadDocument<ResourceOntologyReferences>("ResourceOntologyReferences/" + (ontologyresource.Context ?? ontology.Context) + "/" + resourceId)
-                                from alias in LoadDocument<ResourceOntology>(aliasreference.ReduceOutputs)
-                                from aliasproperty in alias.Properties.Where(p => p.Name == "@alias")
-                                from aliaspropertyreference in LoadDocument<ResourceOntologyReferences>(aliasproperty.Source)
-                                from aliaspropertyresource in LoadDocument<ResourceOntology>(aliaspropertyreference.ReduceOutputs)
-                                from resourcemapping in LoadDocument<ResourceMapping>(aliaspropertyresource.Source)
-                                
-                                select new Resource {
-                                    Context = resourcemapping.Context,
-                                    ResourceId = resourcemapping.ResourceId
-                                }
-                            ).Union(
-                                from ontologyresource in ontologyproperty.Resources
-                                from resourceId in
-                                    from resourceIdValue in ontologyresource.Properties.Where(p => p.Name == "@resourceId").SelectMany(p => p.Value)
-                                    from resourceIdFormattedValue in ResourceFormat(resourceIdValue, resource, property)
-                                    where LoadDocument<ResourceMappingReferences>("ResourceMappingReferences/" + (ontologyresource.Context ?? ontology.Context) + "/" + resourceIdFormattedValue) == null
-                                    select resourceIdFormattedValue
-                                let aliasreference = LoadDocument<ResourceOntologyReferences>("ResourceOntologyReferences/" + (ontologyresource.Context ?? ontology.Context) + "/" + resourceId)
-                                from alias in LoadDocument<ResourceOntology>(aliasreference.ReduceOutputs).Where(r => r.Tags.Contains("@alias"))
-                                from resourcemapping in LoadDocument<ResourceMapping>(alias.Source)
+                                from source in (
+                                    from propertyresource in property.SelectMany(p => p.Resources)
+                                    where !String.IsNullOrEmpty(propertyresource.ResourceId)
+                                    select LoadDocument<ResourceMappingReferences>("ResourceMappingReferences/" + (propertyresource.Context ?? ontology.Context) + "/" + propertyresource.ResourceId).ReduceOutputs
+                                ).Union(
+                                    from ontologyresource in ontologyproperty.Resources
+                                    from resourceId in
+                                        from resourceIdValue in ontologyresource.Properties.Where(p => p.Name == "@resourceId").SelectMany(p => p.Value)
+                                        from resourceIdFormattedValue in ResourceFormat(resourceIdValue, resource, property)
+                                        select resourceIdFormattedValue
+                                    select LoadDocument<ResourceMappingReferences>("ResourceMappingReferences/" + (ontologyresource.Context ?? ontology.Context) + "/" + resourceId).ReduceOutputs
+                                ).Union(
+                                    from ontologyresource in ontologyproperty.Resources
+                                    from resourceId in
+                                        from resourceIdValue in ontologyresource.Properties.Where(p => p.Name == "@resourceId").SelectMany(p => p.Value)
+                                        from resourceIdFormattedValue in ResourceFormat(resourceIdValue, resource, property)
+                                        select resourceIdFormattedValue
+                                    let aliasreference = LoadDocument<ResourceOntologyReferences>("ResourceOntologyReferences/" + (ontologyresource.Context ?? ontology.Context) + "/" + resourceId)
+                                    from alias in LoadDocument<ResourceOntology>(aliasreference.ReduceOutputs).Where(r => r.Tags.Contains("@alias"))
+                                    select alias.Source
+                                ).Union(
+                                    from ontologyresource in ontologyproperty.Resources
+                                    from resourceId in
+                                        from resourceIdValue in ontologyresource.Properties.Where(p => p.Name == "@resourceId").SelectMany(p => p.Value)
+                                        from resourceIdFormattedValue in ResourceFormat(resourceIdValue, resource, property)
+                                        select resourceIdFormattedValue
+                                    let aliasreference = LoadDocument<ResourceOntologyReferences>("ResourceOntologyReferences/" + (ontologyresource.Context ?? ontology.Context) + "/" + resourceId)
+                                    from alias in LoadDocument<ResourceOntology>(aliasreference.ReduceOutputs)
+                                    from aliasproperty in alias.Properties.Where(p => p.Name == "@alias")
+                                    from aliaspropertyreference in LoadDocument<ResourceOntologyReferences>(aliasproperty.Source)
+                                    from aliaspropertyresource in LoadDocument<ResourceOntology>(aliaspropertyreference.ReduceOutputs)
+                                    select aliaspropertyresource.Source
+                                )
+                                from propertyresource in
+                                    from resourcemapping in LoadDocument<ResourceMapping>(source)
+                                    let propertyresourceontologyreference = LoadDocument<ResourceOntologyReferences>(resourcemapping.Type.Select(type => "ResourceOntologyReferences/" + resourcemapping.Context + "/" + type + "/" + GenerateHash(resourcemapping.ResourceId).Replace("/", "/-")))
+                                    let propertyresourceontology = LoadDocument<ResourceOntology>(propertyresourceontologyreference.SelectMany(r => r.ReduceOutputs))
 
+                                    select new Resource {
+                                        Context = resourcemapping.Context,
+                                        ResourceId = resourcemapping.ResourceId,
+                                        Type = resourcemapping.Type,
+                                        SubType = resourcemapping.SubType,
+                                        Title = resourcemapping.Title,
+                                        SubTitle = resourcemapping.SubTitle,
+                                        Code = resourcemapping.Code,
+                                        Status = resourcemapping.Status,
+                                        Tags = resourcemapping.Tags,
+                                        Properties =
+                                            from resourcemappingontologyproperty in propertyresourceontology.SelectMany(r => r.Properties).Where(p => p.Name.StartsWith("@"))
+                                            let derivedproperties =
+                                                from derivedproperty in resourcemapping.Properties
+                                                where resourcemappingontologyproperty.Tags.Contains("@derive")
+                                                from ontologyderivedproperty in resourcemappingontologyproperty.Properties
+                                                where ontologyderivedproperty.Name == derivedproperty.Name
+                                                    && ontologyderivedproperty.Tags.All(t => derivedproperty.Tags.Contains(t))
+                                                    && (ontologyderivedproperty.From == null || ontologyderivedproperty.From <= (derivedproperty.Thru ?? DateTime.MaxValue))
+                                                    && (ontologyderivedproperty.Thru == null || ontologyderivedproperty.Thru >= (derivedproperty.From ?? DateTime.MinValue))
+                                                select derivedproperty
+                                            select new Property {
+                                                Name = resourcemappingontologyproperty.Name,
+                                                Value = (
+                                                    from value in resourcemappingontologyproperty.Value
+                                                    from formattedvalue in ResourceFormat(value, resourcemapping, derivedproperties)
+                                                    select formattedvalue
+                                                ).Where(v => !String.IsNullOrWhiteSpace(v))
+                                            },
+                                        Source = resourcemapping.Source
+                                    }
                                 select new Resource {
-                                    Context = resourcemapping.Context,
-                                    ResourceId = resourcemapping.ResourceId
+                                    Context = propertyresource.Context,
+                                    ResourceId = propertyresource.ResourceId,
+                                    Type = propertyresource.Type.Union(propertyresource.Properties.Where(p => p.Name == "@type").SelectMany(p => p.Value)).Distinct(),
+                                    SubType = propertyresource.SubType.Union(propertyresource.Properties.Where(p => p.Name == "@subtype").SelectMany(p => p.Value)).Distinct(),
+                                    Title = propertyresource.Title.Union(propertyresource.Properties.Where(p => p.Name == "@title").SelectMany(p => p.Value)).Distinct(),
+                                    SubTitle = propertyresource.SubTitle.Union(propertyresource.Properties.Where(p => p.Name == "@subtitle").SelectMany(p => p.Value)).Distinct(),
+                                    Code = propertyresource.Code.Union(propertyresource.Properties.Where(p => p.Name == "@code").SelectMany(p => p.Value)).Distinct(),
+                                    Status = propertyresource.Status.Union(propertyresource.Properties.Where(p => p.Name == "@status").SelectMany(p => p.Value)).Distinct(),
+                                    Tags = propertyresource.Tags.Union(propertyresource.Properties.Where(p => p.Name == "@tags").SelectMany(p => p.Value)).Distinct(),
+                                    Source = propertyresource.Source
                                 }
                             ).Union(
                                 ontologyproperty.Resources.Where(r => !r.Properties.Any(p => p.Name == "@resourceId"))

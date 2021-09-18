@@ -2,18 +2,18 @@
 @model ResourceModel.Resource
 
 <h1>
-  @if (Model.Code.Any())
+  @if ((Model.Code ?? new string[] { }).Any())
   {
     <small>@Model.Code.FirstOrDefault()</small>
   }
   @Model.Title?.FirstOrDefault()
-  @if (Model.SubTitle.Any())
+  @if ((Model.SubTitle ?? new string[] { }).Any())
   {
     <small>@Model.SubTitle.FirstOrDefault()</small>
   }
 </h1>
 
-@foreach (var type in Model.Type)
+@foreach (var type in Model.Type ?? new string[] { })
 {
     <a href="/Studio/Resource?resources[0].Type=@type" class="button primary">@type</a>
 }
@@ -39,7 +39,7 @@
 }
 
 <dl>
-  @foreach (var property in Model.Properties)
+  @foreach (var property in Model.Properties ?? new ResourceModel.Property[] { } )
   {
     <dt>@property.Name</dt>
     <dd>

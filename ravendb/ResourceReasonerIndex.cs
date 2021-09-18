@@ -33,7 +33,9 @@ namespace Digitalisert.Dataplattform
                             Name = property.Name,
                             Value = property.Value,
                             Tags = property.Tags,
-                            Resources =
+                            Resources = (
+                                property.Resources.Where(r => r.ResourceId == null)
+                            ).Union(
                                 from propertyresource in property.Resources.Where(r => r.ResourceId != null)
                                 let reduceoutputs = LoadDocument<ResourcePropertyReferences>("ResourcePropertyReferences/" + propertyresource.Context + "/" + propertyresource.ResourceId).ReduceOutputs
                                 let resourceoutputs = LoadDocument<ResourceProperty>(reduceoutputs)
@@ -50,6 +52,7 @@ namespace Digitalisert.Dataplattform
                                     Tags = (propertyresource.Tags ?? new string[] { }).Union(resourceoutputs.SelectMany(r => r.Tags)).Distinct(),
                                     Source = (propertyresource.Source ?? new string[] { }).Union(resourceoutputs.SelectMany(r => r.Source)).Distinct()
                                 }
+                            )
                         }
                     ).Union(
                         resource.Properties.Where(r => r.Name.StartsWith("@"))
@@ -217,8 +220,10 @@ namespace Digitalisert.Dataplattform
                             Name = propertyG.Key,
                             Value = propertyG.SelectMany(p => p.Value).Distinct(),
                             Tags = propertyG.SelectMany(p => p.Tags).Distinct(),
-                            Resources =
-                                from resource in propertyG.SelectMany(p => p.Resources)
+                            Resources = (
+                                propertyG.SelectMany(p => p.Resources).Where(r => r.ResourceId == null).Distinct()
+                            ).Union(
+                                from resource in propertyG.SelectMany(p => p.Resources).Where(r => r.ResourceId != null)
                                 group resource by new { resource.Context, resource.ResourceId } into resourceG
                                 select new Resource {
                                     Context = resourceG.Key.Context,
@@ -232,6 +237,7 @@ namespace Digitalisert.Dataplattform
                                     Tags = resourceG.SelectMany(r => r.Tags).Distinct(),
                                     Source = resourceG.SelectMany(r => r.Source).Distinct()
                                 }
+                            )
                         }
                     ).Union(
                         g.SelectMany(r => r.Properties).Where(r => r.Name.StartsWith("@"))

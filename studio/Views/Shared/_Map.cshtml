@@ -13,7 +13,7 @@
 else if (Model.Any())
 {
     <div id="map" class="responsive-embed widescreen" data-resource="@Model.First().Context/@Model.First().ResourceId">
-        @foreach (var resource in Model.SelectMany(r => r.Properties).SelectMany(p => p.Resources).Where(r => r.Tags.Contains("@wkt")))
+        @foreach (var resource in Model.SelectMany(r => r.Properties).SelectMany(p => p.Resources).Where(r => r.ResourceId != null && r.Tags.Contains("@wkt")))
         {
             <a href="/Studio/Resource/@resource.Context/@resource.ResourceId" data-resource="@resource.Context/@resource.ResourceId">@resource.Title.FirstOrDefault()</a>
         }

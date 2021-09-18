@@ -7,38 +7,56 @@
 }
 
 <ul class="accordion" data-accordion>
-  @foreach(var resource in Model)
+  @foreach(var resource in Model.Where(r => r.ResourceId != null || (r.Code ?? new string[] {}).Any() || (r.Title ?? new string[] {}).Any() || (r.SubTitle ?? new string[] {}).Any()))
   {
     <li class="accordion-item" data-accordion-item>
       <a href="#" class="accordion-title">
         <small class="subheader">@resource.Code?.FirstOrDefault()</small>
         @resource.Title?.FirstOrDefault()
-        @if (resource.SubTitle.Any())
+        @if ((resource.SubTitle ?? new string[] { }).Any())
         {
           <small class="subheader">@resource.SubTitle.FirstOrDefault()</small>
         }
 
-        @foreach (var type in resource.Type)
-        {
-          <span class="label primary float-right">@type</span>
-        }
-      </a>
-      <div class="accordion-content" data-tab-content>
-        <a href="/Studio/Resource/@(resource.Context)/@(resource.ResourceId)" class="h2">
-              <small>@resource.Code?.FirstOrDefault()</small>
-              @resource.Title?.FirstOrDefault()
-              @if (resource.SubTitle.Any())
-              {
-                <small>@resource.SubTitle.FirstOrDefault()</small>
-              }
-        </a>
-
         <div class="float-right">
+          @foreach (var type in resource.Type ?? new string[] { })
+          {
+            <span class="label primary">@type</span>
+          }
           @foreach (var subType in resource.SubType ?? new string[] { })
           {
             <span class="label secondary">@subType</span>
           }
+          @foreach (var status in resource.Status ?? new string[] { })
+          {
+            <span class="label">@status</span>
+          }
+        </div>
+      </a>
+      <div class="accordion-content" data-tab-content>
+        @if (resource.ResourceId == null)
+        {
+          <h2>
+            <small>@resource.Code?.FirstOrDefault()</small>
+            @resource.Title?.FirstOrDefault()
+            @if ((resource.SubTitle ?? new string[] { }).Any())
+            {
+              <small>@resource.SubTitle.FirstOrDefault()</small>
+            }
+          </h2>
+        }
+        else {
+          <a href="/Studio/Resource/@(resource.Context)/@(resource.ResourceId)" class="h2">
+            <small>@resource.Code?.FirstOrDefault()</small>
+            @resource.Title?.FirstOrDefault()
+            @if (resource.SubTitle.Any())
+            {
+              <small>@resource.SubTitle.FirstOrDefault()</small>
+            }
+          </a>
+        }
 
+        <div class="float-right">
           @foreach (var tags in resource.Tags ?? new string[] { })
           {
             <span class="label">@tags</span>

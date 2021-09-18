@@ -43,14 +43,14 @@ namespace Digitalisert.Dataplattform
                                 {
                                     Context = propertyresource.Context,
                                     ResourceId = propertyresource.ResourceId,
-                                    Type = (propertyresource.Type ?? new string[] { }).Union(resourceoutputs.SelectMany(r => r.Type)).Distinct(),
-                                    SubType = (propertyresource.SubType ?? new string[] { }).Union(resourceoutputs.SelectMany(r => r.SubType)).Distinct(),
-                                    Title = (propertyresource.Title ?? new string[] { }).Union(resourceoutputs.SelectMany(r => r.Title)).Distinct(),
-                                    SubTitle = (propertyresource.SubTitle ?? new string[] { }).Union(resourceoutputs.SelectMany(r => r.SubTitle)).Distinct(),
-                                    Code = (propertyresource.Code ?? new string[] { }).Union(resourceoutputs.SelectMany(r => r.Code)).Distinct(),
-                                    Status = (propertyresource.Status ?? new string[] { }).Union(resourceoutputs.SelectMany(r => r.Status)).Distinct(),
-                                    Tags = (propertyresource.Tags ?? new string[] { }).Union(resourceoutputs.SelectMany(r => r.Tags)).Distinct(),
-                                    Source = (propertyresource.Source ?? new string[] { }).Union(resourceoutputs.SelectMany(r => r.Source)).Distinct()
+                                    Type = (propertyresource.Type ?? new string[] { }).Union(resourceoutputs.SelectMany(r => r.Type)).Select(v => v.ToString()).Distinct(),
+                                    SubType = (propertyresource.SubType ?? new string[] { }).Union(resourceoutputs.SelectMany(r => r.SubType)).Select(v => v.ToString()).Distinct(),
+                                    Title = (propertyresource.Title ?? new string[] { }).Union(resourceoutputs.SelectMany(r => r.Title)).Select(v => v.ToString()).Distinct(),
+                                    SubTitle = (propertyresource.SubTitle ?? new string[] { }).Union(resourceoutputs.SelectMany(r => r.SubTitle)).Select(v => v.ToString()).Distinct(),
+                                    Code = (propertyresource.Code ?? new string[] { }).Union(resourceoutputs.SelectMany(r => r.Code)).Select(v => v.ToString()).Distinct(),
+                                    Status = (propertyresource.Status ?? new string[] { }).Union(resourceoutputs.SelectMany(r => r.Status)).Select(v => v.ToString()).Distinct(),
+                                    Tags = (propertyresource.Tags ?? new string[] { }).Union(resourceoutputs.SelectMany(r => r.Tags)).Select(v => v.ToString()).Distinct(),
+                                    Source = (propertyresource.Source ?? new string[] { }).Union(resourceoutputs.SelectMany(r => r.Source)).Select(v => v.ToString()).Distinct()
                                 }
                             )
                         }

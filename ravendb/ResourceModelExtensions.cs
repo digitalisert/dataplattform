@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MoreLinq.Extensions;
@@ -108,6 +108,7 @@ namespace Digitalisert.Dataplattform
             var formatter = SmartFormat.Smart.CreateDefaultSmartFormat();
             formatter.Parser.AddAdditionalSelectorChars("æøåÆØÅ");
             formatter.Settings.FormatErrorAction = SmartFormat.Core.Settings.ErrorAction.Ignore;
+            formatter.Settings.ParseErrorAction = SmartFormat.Core.Settings.ErrorAction.OutputErrorInResult;
 
             return formatter.Format(value, ResourceFormatData(resource, resourceproperty)).Split(new[] { '\n' } , StringSplitOptions.RemoveEmptyEntries);
         }

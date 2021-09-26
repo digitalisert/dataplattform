@@ -45,31 +45,46 @@ namespace Digitalisert.Dataplattform
                     {
                         Context = propertyresource.Context ?? ontology.Context,
                         ResourceId = propertyresource.ResourceId,
-                        Tags = new string[] { },
+                        Tags = new[] { "@pull" },
                         Properties = new Property[] { },
                         Source = new string[] { }
                     }
                 ).Union(
                     from ontologyproperty in ontology.Properties.Where(p => !p.Name.StartsWith("@"))
                     from ontologyresource in ontologyproperty.Resources
-                    where ontologyresource.Properties.Any(p => p.Name == "@resourceId")
 
                     from resourceId in 
                         from resourceIdValue in ontologyresource.Properties.Where(p => p.Name == "@resourceId").SelectMany(p => p.Value)
                         from resourceIdFormattedValue in ResourceFormat(resourceIdValue, resource, null)
                         select resourceIdFormattedValue
 
-                    where ontologyresource.Tags.Contains("@push") || LoadDocument<ResourceMappingReferences>("ResourceMappingReferences/" + ontologyresource.Context + "/" + resourceId) != null
+                    where LoadDocument<ResourceMappingReferences>("ResourceMappingReferences/" + ontologyresource.Context + "/" + resourceId) != null
 
                     select new Resource
                     {
                         Context = ontologyresource.Context,
                         ResourceId = resourceId,
-                        Tags = ontologyresource.Tags,
+                        Tags = new[] { "@pull" },
+                        Properties = new Property[] { },
+                        Source = new string[] { }
+                    }
+                ).Union(
+                    from ontologyproperty in ontology.Properties.Where(p => !p.Name.StartsWith("@"))
+                    from ontologyresource in ontologyproperty.Resources
+                    where ontologyresource.Tags.Contains("@push") || ontologyresource.Properties.Any(p => p.Tags.Contains("@push"))
+
+                    from resourceId in
+                        from resourceIdValue in ontologyresource.Properties.Where(p => p.Name == "@resourceId").SelectMany(p => p.Value)
+                        from resourceIdFormattedValue in ResourceFormat(resourceIdValue, resource, null)
+                        select resourceIdFormattedValue
+
+                    select new Resource
+                    {
+                        Context = ontologyresource.Context,
+                        ResourceId = resourceId,
+                        Tags =  ontologyresource.Tags.Where(t => t == "@push"),
                         Properties = ontologyresource.Properties.Where(p => ontologyresource.Tags.Contains("@push") || p.Tags.Contains("@push")),
-                        Source = (ontologyresource.Tags.Contains("@push") || ontologyresource.Properties.Any(p => p.Tags.Contains("@push")))
-                            ? new[] { MetadataFor(resource).Value<String>("@id") }
-                            : new string[] { }
+                        Source = new[] { MetadataFor(resource).Value<String>("@id") }
                     }
                 ).Union(
                     from aliasValue in ontology.Properties.Where(p => p.Name == "@alias").SelectMany(p => p.Value)
@@ -80,8 +95,19 @@ namespace Digitalisert.Dataplattform
                         Context = ontology.Context,
                         ResourceId = aliasFormattedValue,
                         Tags = new[] { "@alias" },
-                        Properties = new Property[] { },
-                        Source = new[] { MetadataFor(resource).Value<String>("@id") }
+                        Properties = new[] {
+                            new Property {
+                                Name = "@resource",
+                                Resources = new[] {
+                                    new Resource {
+                                        Context = resource.Context,
+                                        ResourceId = resource.ResourceId
+                                    }
+                                },
+                                Source = new[] { MetadataFor(resource).Value<String>("@id") }
+                            }
+                        },
+                        Source = new string[] { }
                     }
                 ).Union(
                     from aliasValue in ontology.Properties.Where(p => p.Name == "@alias").SelectMany(p => p.Value)

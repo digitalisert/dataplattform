@@ -64,7 +64,8 @@ namespace Digitalisert.Dataplattform
                                         select resourceIdFormattedValue
                                     let aliasreference = LoadDocument<ResourceOntologyReferences>("ResourceOntologyReferences/" + (ontologyresource.Context ?? ontology.Context) + "/" + resourceId)
                                     from alias in LoadDocument<ResourceOntology>(aliasreference.ReduceOutputs).Where(r => r.Tags.Contains("@alias"))
-                                    select alias.Source
+                                    from resourceproperty in alias.Properties.Where(p => p.Name == "@resource")
+                                    select resourceproperty.Source
                                 ).Union(
                                     from ontologyresource in ontologyproperty.Resources
                                     from resourceId in
@@ -76,7 +77,8 @@ namespace Digitalisert.Dataplattform
                                     from aliasproperty in alias.Properties.Where(p => p.Name == "@alias")
                                     from aliaspropertyreference in LoadDocument<ResourceOntologyReferences>(aliasproperty.Source)
                                     from aliaspropertyresource in LoadDocument<ResourceOntology>(aliaspropertyreference.ReduceOutputs)
-                                    select aliaspropertyresource.Source
+                                    from resourceproperty in aliaspropertyresource.Properties.Where(p => p.Name == "@resource")
+                                    select resourceproperty.Source
                                 )
                                 from propertyresource in
                                     from resourcemapping in LoadDocument<ResourceMapping>(source)
@@ -138,10 +140,37 @@ namespace Digitalisert.Dataplattform
 
             AddMap<ResourceOntology>(ontologies =>
                 from ontology in ontologies.Where(r => r.Tags.Contains("@push") || r.Properties.Any(p => p.Tags.Contains("@push")))
+                from pushresource in (
+                    from tags in ontology.Tags.Where(t => t == "@push" || t == "@pull")
+                    select new Resource {
+                        Context = ontology.Context,
+                        ResourceId = ontology.ResourceId
+                    }
+                ).Union(
+                    from tags in ontology.Tags.Where(t => t == "@alias")
+                    from resourceproperty in ontology.Properties.Where(p => p.Name == "@resource")
+                    from aliasresource in resourceproperty.Resources
+                    select new Resource {
+                        Context = aliasresource.Context,
+                        ResourceId = aliasresource.ResourceId
+                    }
+                ).Union(
+                    from tags in ontology.Tags.Where(t => t == "@pull")
+                    from aliasproperty in ontology.Properties.Where(p => p.Name == "@alias")
+                    from aliasreference in LoadDocument<ResourceOntologyReferences>(aliasproperty.Source).Where(r => r != null)
+                    from aliasresource in LoadDocument<ResourceOntology>(aliasreference.ReduceOutputs).Where(r => r != null)
+                    from resourceproperty in aliasresource.Properties.Where(p => p.Name == "@resource")
+                    from resourcealias in resourceproperty.Resources
+                    select new Resource {
+                        Context = resourcealias.Context,
+                        ResourceId = resourcealias.ResourceId
+                    }
+                )
+
                 from resource in LoadDocument<ResourceMapping>(ontology.Source).Where(r => r != null)
                 select new Resource {
-                    Context = ontology.Context,
-                    ResourceId = ontology.ResourceId,
+                    Context = pushresource.Context,
+                    ResourceId = pushresource.ResourceId,
                     Type = ontology.Properties.Where(p => p.Name == "@type").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, null)).Distinct(),
                     SubType = ontology.Properties.Where(p => p.Name == "@subtype").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, null)).Distinct(),
                     Title = ontology.Properties.Where(p => p.Name == "@title").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, null)).Distinct(),
@@ -190,7 +219,7 @@ namespace Digitalisert.Dataplattform
                             ),
                             Properties = property.SelectMany(p => p.Properties).Union(ontologyproperty.Properties),
                             Source = (ontologyproperty.Tags.Contains("@push")) ? new[] { MetadataFor(resource).Value<String>("@id") } : new string[] { },
-                        }).Where(p => p.Value.Any() || p.Resources.Any()).Union(ontology.Properties.Where(p => p.Name.StartsWith("@"))),
+                        }).Where(p => p.Value.Any() || p.Resources.Any()).Union(ontology.Properties.Where(p => p.Name.StartsWith("@") && p.Name != "@resource")),
                     Source = (ontology.Tags.Contains("@push")) ? new[] { MetadataFor(resource).Value<String>("@id")} : new string[] { },
                     Modified = MetadataFor(resource).Value<DateTime>("@last-modified")
                 }

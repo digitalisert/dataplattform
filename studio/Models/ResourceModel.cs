@@ -81,9 +81,9 @@ namespace Digitalisert.Dataplattform.Studio.Models
                 {
                     foreach (var value in (field.Values ?? new string[] { }).Where(v => !String.IsNullOrWhiteSpace(v)))
                     {
-                        if (value.StartsWith("-"))
+                        if (value.StartsWith("!"))
                         {
-                            query.WhereNotEquals(field.Name, value.TrimStart('-'));
+                            query.WhereNotEquals(field.Name, value.TrimStart('!'));
                         }
                         else if (value.EndsWith("*"))
                         {

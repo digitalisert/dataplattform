@@ -33,7 +33,20 @@
                 {
                     var query = String.Join("&", crumbs.Where(c => c.Index == resource.i).Take(crumb.i + 1).Select(c => "resources[0]." + c.Name + "=" + c.Value).Union(search));
                     var except = String.Join("&", crumbs.Where(c => !(c.Index == crumb.c.Index && c.Name == crumb.c.Name && c.Value == crumb.c.Value)).Select(c => "resources[" + c.Index + "]." + c.Name + "=" + c.Value).Union(search));
-                    <li><a href="?@query">@crumb.c.Value</a> <a href="?@except">x</a></li>
+                    <li>
+                        @if (!crumb.c.Value.StartsWith("!"))
+                        {
+                            <a href="?@query">@crumb.c.Value</a> <a href="?@except">x</a>
+                            var not = except + "&resources[" + crumb.c.Index + "]." + crumb.c.Name + "=!" + crumb.c.Value;
+                            <a href="?@not">!</a>
+                        }
+                        else
+                        {
+                            <a href="?@query"><del>@crumb.c.Value.Substring(1)</del></a> <a href="?@except">x</a>
+                            var notnot = except + "&resources[" + crumb.c.Index + "]." + crumb.c.Name + "=" + crumb.c.Value.Substring(1);
+                            <a href="?@notnot">!!</a>
+                        }
+                    </li>
                 }
                 @if (resourceSearch != "")
                 {

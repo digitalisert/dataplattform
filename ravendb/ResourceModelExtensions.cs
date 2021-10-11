@@ -129,7 +129,11 @@ namespace Digitalisert.Dataplattform
                 { "Properties", new Dictionary<string, object>() }
             };
 
-            foreach(var property in ((IEnumerable<dynamic>)resourceproperty ?? new object[] { }).Union(((IEnumerable<dynamic>)resource.Properties ?? new object[] { })) ) {
+            dynamic properties = (resourceproperty == null || !resourceproperty.Any()) ? new object[] { }
+                : (resourceproperty.First().GetType().Name == "DynamicBlittableJson") ? resourceproperty
+                : AnonymousToExpandoProperty(resourceproperty);
+
+            foreach(dynamic property in ((IEnumerable<dynamic>)properties).Union(((IEnumerable<dynamic>)resource.Properties ?? new object[] { })) ) {
                 if (!property.Name.StartsWith("@")) {
                     var name = property.Name.Replace(" ", "_");
                     var value = ((IEnumerable<dynamic>)property.Value ?? new object[] {}).Select(v => v.ToString()).Where(v => !String.IsNullOrWhiteSpace(v)).ToList();
@@ -155,6 +159,69 @@ namespace Digitalisert.Dataplattform
             }
 
             return resourceData;
+        }
+
+        private static IEnumerable<dynamic> AnonymousToExpandoProperty(IEnumerable<dynamic> properties)
+        {
+            foreach (dynamic property in properties)
+            {
+                dynamic expando = new System.Dynamic.ExpandoObject();
+                var expandoDic = (IDictionary<string, object>)expando;
+
+                foreach(var prop in property.GetType().GetProperties())
+                {
+                    if (new[] { "Name", "Value", "Tags" }.ToList().Contains(prop.Name)) {
+                        expandoDic.Add(prop.Name, prop.GetValue(property));
+                    }
+                    else if (prop.Name == "Resources") {
+                        expandoDic.Add(prop.Name, AnonymousToExpandoResource(prop.GetValue(property)));
+                    }
+                }
+
+                yield return new {
+                    Name = (expandoDic.ContainsKey("Name")) ? expando.Name : "",
+                    Value = (expandoDic.ContainsKey("Value")) ? expando.Value : new string[] { },
+                    Tags = (expandoDic.ContainsKey("Tags")) ? expando.Tags : new string[] { },
+                    Resources = (expandoDic.ContainsKey("Resources")) ? expando.Resources : new object[] { },
+                };
+            }
+        }
+
+        private static IEnumerable<dynamic> AnonymousToExpandoResource(IEnumerable<dynamic> resources)
+        {
+            foreach (dynamic resource in resources)
+            {
+                dynamic expando = new System.Dynamic.ExpandoObject();
+                var expandoDic = (IDictionary<string, object>)expando;
+
+                foreach(var prop in resource.GetType().GetProperties())
+                {
+                    if (new string[] { "Context", "ResourceId", "Type", "SubType", "Title", "SubTitle", "Code", "Status", "Tags" }.ToList().Contains(prop.Name)) {
+                        expandoDic.Add(prop.Name, prop.GetValue(resource));
+                    }
+                    else if (prop.Name == "Properties") {
+                        expandoDic.Add(prop.Name, AnonymousToExpandoProperty(prop.GetValue(resource)));
+                    }
+                }
+
+                if (!expandoDic.ContainsKey("Properties"))
+                {
+                    expandoDic.Add("Properties", new dynamic[] { } );
+                }
+
+                yield return new {
+                    Context = (expandoDic.ContainsKey("Context")) ? expando.Context : null,
+                    ResourceId = (expandoDic.ContainsKey("ResourceId")) ? expando.ResourceId : null,
+                    Type = (expandoDic.ContainsKey("Type")) ? expando.Type : new string[] { },
+                    SubType = (expandoDic.ContainsKey("SubType")) ? expando.SubType : new string[] { },
+                    Title = (expandoDic.ContainsKey("Title")) ? expando.Title : new string[] { },
+                    SubTitle = (expandoDic.ContainsKey("SubTitle")) ? expando.SubTitle : new string[] { },
+                    Code = (expandoDic.ContainsKey("Code")) ? expando.Code : new string[] { },
+                    Status = (expandoDic.ContainsKey("Status")) ? expando.Status : new string[] { },
+                    Tags = (expandoDic.ContainsKey("Tags")) ? expando.Tags : new string[] { },
+                    Properties = (expandoDic.ContainsKey("Properties")) ? expando.Properties : new object[] { }
+                };
+            }
         }
 
         public static string GenerateHash(string str)

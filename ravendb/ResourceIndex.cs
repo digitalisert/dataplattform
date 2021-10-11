@@ -54,7 +54,7 @@ namespace Digitalisert.Dataplattform
                     Code = resource.Code,
                     Body = body,
                     Status = resource.Status,
-                    Tags = resource.Tags,
+                    Tags = resource.Tags.Union(properties.Where(p => p.Name == "@tags").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, properties))).Select(v => v.ToString()),
                     Properties = properties.Where(p => !p.Name.StartsWith("@")),
                     _ = (
                         from property in properties

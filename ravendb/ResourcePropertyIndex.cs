@@ -230,7 +230,7 @@ namespace Digitalisert.Dataplattform
                 group result by new { result.Context, result.ResourceId } into g
 
                 let computedProperties =
-                    from property in g.SelectMany(r => r.Properties).Where(p => p.Name.StartsWith("@"))
+                    from property in g.SelectMany(r => r.Properties).Where(p => p.Name.StartsWith("@") && !p.Tags.Contains("@reasoning"))
                     select new Property {
                         Name = property.Name,
                         Value = (

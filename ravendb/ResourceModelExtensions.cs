@@ -17,33 +17,32 @@ namespace Digitalisert.Dataplattform
             foreach(var propertyG in ((IEnumerable<dynamic>)properties).GroupBy(p => p.Name))
             {
                 var tags = propertyG.SelectMany(p => (IEnumerable<dynamic>)p.Tags).Distinct().Select(t => t.ToString());
-                var value = propertyG.SelectMany(p => (IEnumerable<dynamic>)p.Value).Distinct();
 
                 if (tags.Intersect(new[] { "@sum", "@min", "@max", "@average" }).Any())
                 {
-                    var integers = value.Where(v => int.TryParse(v.ToString(), out int _test)).Select(v => (int)int.Parse(v.ToString()));
+                    var decimals = propertyG.SelectMany(p => (IEnumerable<dynamic>)p.Value).Where(v => decimal.TryParse(v.ToString(), out decimal _test)).Select(v => (decimal)decimal.Parse(v.ToString()));
                     if (tags.Contains("@sum")) {
                         yield return new {
                             Name = propertyG.Key,
-                            Value = new[] { integers.Sum().ToString() },
+                            Value = (decimals.Any()) ? new[] { decimals.Sum().ToString() } : new string[] {},
                             Tags = tags
                         };
                     } else if (tags.Contains("@average")) {
                         yield return new {
                             Name = propertyG.Key,
-                            Value = new[] { integers.Average().ToString() },
+                            Value = (decimals.Any()) ? new[] { decimals.Average().ToString() } : new string[] {},
                             Tags = tags,
                         };
                     } else if (tags.Contains("@min")) {
                         yield return new {
                             Name = propertyG.Key,
-                            Value = new[] { integers.Min().ToString() },
+                            Value = (decimals.Any()) ? new[] { decimals.Min().ToString() } : new string[] {},
                             Tags = tags,
                         };
                     } else if (tags.Contains("@max")) {
                         yield return new {
                             Name = propertyG.Key,
-                            Value = new[] { integers.Max().ToString() },
+                            Value = (decimals.Any()) ? new[] { decimals.Max().ToString() } : new string[] {},
                             Tags = tags
                         };
                     }
@@ -75,6 +74,7 @@ namespace Digitalisert.Dataplattform
                     }
                 }
                 else {
+                    var value = propertyG.SelectMany(p => (IEnumerable<dynamic>)p.Value).Distinct();
                     if (tags.Contains("@wkt"))
                     {
                         var wktreader = new WKTReader();

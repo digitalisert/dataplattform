@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -31,7 +31,7 @@ namespace Digitalisert.Dataplattform.Studio.Controllers
         }
         public IActionResult Index()
         {
-            return View();
+            return Resource();
         }
 
         public IActionResult Resource([FromQuery] Models.ResourceModel.Resource[] resources = null, string search = null)

@@ -1,4 +1,5 @@
 @using System.Collections.Generic
+@using System.Linq
 @using Digitalisert.Dataplattform.Studio.Models
 @model IEnumerable<ResourceModel.Resource>
 
@@ -27,16 +28,36 @@
     <ul class="dropdown menu" data-dropdown-menu>
       <li class="menu-text">Digitalisert</li>
 
-      @foreach (var facet in ViewBag.ResourceFacet)
+      @foreach (var facet in (Dictionary<string, Raven.Client.Documents.Queries.Facets.FacetResult>)ViewBag.ResourceFacet)
       {
+        var name = (facet.Value.Name == "Properties") ? "Properties[0].Name" : facet.Value.Name;
         <li>
           <a href="#">
             @facet.Value.Name
           </a>
           <ul class="menu vertial">
-            @foreach(var value in facet.Value.Values)
+            @foreach(var valueG in facet.Value.Values.Where(v => v.Range.Contains(":")).GroupBy(v => v.Range.Substring(0, v.Range.IndexOf(":"))))
             {
-              var name = (facet.Value.Name == "Properties") ? "Properties[0].Name" : facet.Value.Name;
+              <li>
+                <a href="#">
+                  @valueG.Key
+                </a>
+                <ul class="menu">
+                  @foreach (var value in valueG.OrderBy(v => v.Range))
+                  {
+                    var query = String.Join("&", parameters.Select(p => "resources[" + p.Index + "]." + p.Name + "=" + p.Value).Union(new[] { "resources[0]." + name + "=" + value.Range } ).Union(search));
+                    <li>
+                      <a href="?@query">
+                        @value.Range.Substring(valueG.Key.Length + 1)
+                        <span class="badge secondary">@value.Count</span>
+                      </a>
+                    </li>
+                  }
+                </ul>
+              </li>
+            }
+            @foreach(var value in facet.Value.Values.Where(v => !v.Range.Contains(":")).OrderBy(v => v.Range))
+            {
               var query = String.Join("&", parameters.Select(p => "resources[" + p.Index + "]." + p.Name + "=" + p.Value).Union(new[] { "resources[0]." + name + "=" + value.Range } ).Union(search));
               <li>
                 <a href="?@query">

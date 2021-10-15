@@ -1,13 +1,16 @@
 FROM node:latest AS build
 WORKDIR /build
 
-COPY package.json package-lock.json ./
-RUN npm ci
-
 WORKDIR /build/map
 COPY map/package.json ./
 RUN npm install
 COPY map .
+RUN npm run build
+
+WORKDIR /build/bulma
+COPY bulma/package.json ./
+RUN npm install
+COPY bulma .
 RUN npm run build
 
 FROM nginx:stable-alpine

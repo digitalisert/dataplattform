@@ -1,40 +1,40 @@
 @using Digitalisert.Dataplattform.Studio.Models
 @model ResourceModel.Resource
 
-<h1>
-  @if ((Model.Code ?? new string[] { }).Any())
-  {
-    <small>@Model.Code.FirstOrDefault()</small>
-  }
-  @Model.Title?.FirstOrDefault()
-  @if ((Model.SubTitle ?? new string[] { }).Any())
-  {
-    <small>@Model.SubTitle.FirstOrDefault()</small>
-  }
+<h1 class="title">
+    @if ((Model.Code ?? new string[] { }).Any())
+    {
+        <small>@Model.Code.FirstOrDefault()</small>
+    }
+    @Model.Title?.FirstOrDefault()
 </h1>
+@if ((Model.SubTitle ?? new string[] { }).Any())
+{
+    <h2 class="subtitle">@Model.SubTitle.FirstOrDefault()</h2>
+}
 
-<div class="button-group">
-  @foreach (var type in Model.Type ?? new string[] { })
-  {
-      <a href="/Studio/Resource?resources[0].Type=@type" class="button primary">@type</a>
-  }
+<div class="buttons">
+    @foreach (var type in Model.Type ?? new string[] { })
+    {
+        <a href="/Studio/Resource?resources[0].Type=@type" class="button is-primary">@type</a>
+    }
 
-  @foreach (var subType in Model.SubType ?? new string[] { })
-  {
-      <a href="/Studio/Resource?resources[0].SubType=@subType" class="button secondary">@subType</a>
-  }
+    @foreach (var subType in Model.SubType ?? new string[] { })
+    {
+        <a href="/Studio/Resource?resources[0].SubType=@subType" class="button is-info">@subType</a>
+    }
 
-  @foreach (var status in Model.Status ?? new string[] { })
-  {
-      <a href="/Studio/Resource?resources[0].Status=@status" class="button">@status</a>
-  }
+    @foreach (var status in Model.Status ?? new string[] { })
+    {
+        <a href="/Studio/Resource?resources[0].Status=@status" class="button">@status</a>
+    }
 </div>
 
-<div class="button-group small">
-  @foreach (var tags in Model.Tags ?? new string[] { })
-  {
-      <a href="/Studio/Resource?resources[0].Tags=@tags" class="button">@tags</a>
-  }
+<div class="buttons are-small">
+    @foreach (var tags in Model.Tags ?? new string[] { })
+    {
+        <a href="/Studio/Resource?resources[0].Tags=@tags" class="button">@tags</a>
+    }
 </div>
 
 @foreach (var body in Model.Body ?? new string[] { })
@@ -42,30 +42,32 @@
     <p>@body</p>
 }
 
-<dl>
-  @foreach (var property in Model.Properties ?? new ResourceModel.Property[] { } )
-  {
-    <dt>@property.Name</dt>
-    <dd>
-      @foreach (var value in property.Value ?? new string[] { })
+<div class="content">
+  <dl>
+      @foreach (var property in Model.Properties ?? new ResourceModel.Property[] { } )
       {
-        if (value.Length < 300)
-        {
-          <p>@value</p>
-        }
-        else
-        {
-          <p>
-            <span>@(value.Substring(0, 300))</span>
-            <span id="@(property.Name)-collapse" class="hide" data-toggler=".hide">@(value.Substring(300))</span>
-            <a data-toggle="@(property.Name)-collapse">...</a>
-          </p>
-        }
+          <dt class="label">@property.Name</dt>
+          <dd>
+              @foreach (var value in property.Value ?? new string[] { })
+              {
+                  if (value.Length < 300)
+                  {
+                      <p>@value</p>
+                  }
+                  else
+                  {
+                      <p>
+                          <span>@(value.Substring(0, 300))</span>
+                          <span id="@(property.Name)-collapse" class="is-hidden" data-toggler=".hide">@(value.Substring(300))</span>
+                          <a data-toggle="@(property.Name)-collapse">...</a>
+                      </p>
+                  }
+              }
+              @if (property.Resources != null)
+              {
+                  <partial name="~/Views/Shared/_Accordion.cshtml" model="property.Resources"/>
+              }
+          </dd>
       }
-      @if (property.Resources != null)
-      {
-        <partial name="~/Views/Shared/_Accordion.cshtml" model="property.Resources"/>
-      }
-    </dd>
-  }
-</dl>
+  </dl>
+</div>

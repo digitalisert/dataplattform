@@ -25,10 +25,10 @@
 
     var search = (resourceSearch != "") ? new[] { "search=" + resourceSearch } : new string[] { };
 
-    <nav class="callout">
+    <nav class="breadcrumb box mt-1" aria-label="breadcrumbs">
         @foreach(var resource in Model.Select((r, i) => new { r, i }))
         {
-            <ul class="breadcrumbs">
+            <ul>
                 @foreach(var crumb in crumbs.Where(c => c.Index == resource.i).Select((c, i) => new { c, i }))
                 {
                     var query = String.Join("&", crumbs.Where(c => c.Index == resource.i).Take(crumb.i + 1).Select(c => "resources[0]." + c.Name + "=" + c.Value).Union(search));
@@ -55,8 +55,11 @@
                 }
             </ul>
         }
-        @foreach (var resource in resourcecurrent)
-        {
+    </nav>
+    @foreach (var resource in resourcecurrent)
+    {
+        var except = String.Join("&", crumbs.Select(c => "resources[" + c.Index + "]." + c.Name + "=" + c.Value).Union(search));
+        <div class="box">
             <a href="/Studio/Resource/@(resource.Context)/@(resource.ResourceId)" class="h4">
                 <small>@resource.Code?.FirstOrDefault()</small>
                 @resource.Title?.FirstOrDefault()
@@ -65,8 +68,7 @@
                     <small>@resource.SubTitle.FirstOrDefault()</small>
                 }
             </a>
-            var except = String.Join("&", crumbs.Select(c => "resources[" + c.Index + "]." + c.Name + "=" + c.Value).Union(search));
             <a href="/Studio/Resource?@except">x</a>
-        }
-    </nav>
+        </div>
+    }
 }

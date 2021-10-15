@@ -1,9 +1,0 @@
-{
-    "name": "digitalisert",
-    "version": "0.1.0",
-    "private": true,
-    "dependencies": {
-        "foundation-sites": "6.6.3",
-        "jquery": "3.5.1"
-    }
-}

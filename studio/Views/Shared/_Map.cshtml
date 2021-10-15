@@ -3,7 +3,7 @@
 
 @if (Model.Skip(1).Any())
 {
-    <div id="map" class="responsive-embed widescreen">
+    <div id="map" class="image is-3by1">
         @foreach (var resource in Model.Where(r => r.Tags.Contains("@wkt")))
         {
             <a href="/Studio/Resource/@resource.Context/@resource.ResourceId" data-resource="@resource.Context/@resource.ResourceId">@resource.Title?.FirstOrDefault()</a>
@@ -12,7 +12,7 @@
 }
 else if (Model.Any())
 {
-    <div id="map" class="responsive-embed widescreen" data-resource="@Model.First().Context/@Model.First().ResourceId">
+    <div id="map" class="image is-3by1" data-resource="@Model.First().Context/@Model.First().ResourceId">
         @foreach (var resource in Model.SelectMany(r => r.Properties).SelectMany(p => p.Resources).Where(r => r.ResourceId != null && r.Tags.Contains("@wkt")))
         {
             <a href="/Studio/Resource/@resource.Context/@resource.ResourceId" data-resource="@resource.Context/@resource.ResourceId">@resource.Title.FirstOrDefault()</a>

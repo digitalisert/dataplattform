@@ -23,63 +23,68 @@
     var search = (resourceSearch != "") ? new[] { "search=" + resourceSearch } : new string[] { };
 }
 
-<div class="top-bar">
-  <div class="top-bar-left">
-    <ul class="dropdown menu" data-dropdown-menu>
-      <li class="menu-text">Digitalisert</li>
-
-      @foreach (var facet in (Dictionary<string, Raven.Client.Documents.Queries.Facets.FacetResult>)ViewBag.ResourceFacet)
-      {
-        var name = (facet.Value.Name == "Properties") ? "Properties[0].Name" : facet.Value.Name;
-        <li>
-          <a href="#">
-            @facet.Value.Name
-          </a>
-          <ul class="menu vertial">
-            @foreach(var valueG in facet.Value.Values.Where(v => v.Range.Contains(":")).GroupBy(v => v.Range.Substring(0, v.Range.IndexOf(":"))))
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/Studio/Resource/">Digitalisert</a>
+        <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+    <div class="navbar-menu" id="navMenu">
+        <div class="navbar-start">
+            @foreach (var facet in (Dictionary<string, Raven.Client.Documents.Queries.Facets.FacetResult>)ViewBag.ResourceFacet)
             {
-              <li>
-                <a href="#">
-                  @valueG.Key
-                </a>
-                <ul class="menu">
-                  @foreach (var value in valueG.OrderBy(v => v.Range))
-                  {
-                    var query = String.Join("&", parameters.Select(p => "resources[" + p.Index + "]." + p.Name + "=" + p.Value).Union(new[] { "resources[0]." + name + "=" + value.Range } ).Union(search));
-                    <li>
-                      <a href="?@query">
-                        @value.Range.Substring(valueG.Key.Length + 1)
-                        <span class="badge secondary">@value.Count</span>
-                      </a>
-                    </li>
-                  }
-                </ul>
-              </li>
+                var name = (facet.Value.Name == "Properties") ? "Properties[0].Name" : facet.Value.Name;
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">@facet.Value.Name</a>
+                    <div class="navbar-dropdown">
+                        @foreach(var valueG in facet.Value.Values.Where(v => v.Range.Contains(":")).GroupBy(v => v.Range.Substring(0, v.Range.IndexOf(":"))))
+                        {
+                            <div class="navbar-item">
+                                <a href="#">@valueG.Key</a>
+                                <div class="tags are-small has-addons">
+                                    @foreach (var value in valueG.OrderBy(v => v.Range))
+                                    {
+                                        var query = String.Join("&", parameters.Select(p => "resources[" + p.Index + "]." + p.Name + "=" + p.Value).Union(new[] { "resources[0]." + name + "=" + value.Range } ).Union(search));
+                                        <a class="tag" href="?@query">
+                                        @value.Range.Substring(valueG.Key.Length + 1)
+                                        <span class="is-rounded">@value.Count</span>
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        @foreach(var value in facet.Value.Values.Where(v => !v.Range.Contains(":")).OrderBy(v => v.Range))
+                        {
+                            var query = String.Join("&", parameters.Select(p => "resources[" + p.Index + "]." + p.Name + "=" + p.Value).Union(new[] { "resources[0]." + name + "=" + value.Range } ).Union(search));
+                            <a class="navbar-item" href="?@query">
+                                @value.Range
+                                <span class="tag is-rounded">@value.Count</span>
+                            </a>
+                        }
+                    </div>
+                </div>
             }
-            @foreach(var value in facet.Value.Values.Where(v => !v.Range.Contains(":")).OrderBy(v => v.Range))
-            {
-              var query = String.Join("&", parameters.Select(p => "resources[" + p.Index + "]." + p.Name + "=" + p.Value).Union(new[] { "resources[0]." + name + "=" + value.Range } ).Union(search));
-              <li>
-                <a href="?@query">
-                  @value.Range
-                  <span class="badge secondary">@value.Count</span>
-                </a>
-              </li>
-            }
-          </ul>
-        </li>
-      }
-    </ul>
-  </div>
-  <form class="top-bar-right" action="/Studio/Resource">
-    @foreach (var parameter in parameters)
-    {
-        <input type="hidden" name="resources[@parameter.Index].@parameter.Name" value="@parameter.Value" />
-    }
-
-    <ul class="menu">
-      <li><input type="search" name="search" placeholder="Search..." value="@resourceSearch"></li>
-      <li><button type="submit" class="button">Search</button></li>
-    </ul>
-  </form>
-</div>
+        </div>
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <form action="/Studio/Resource">
+                    @foreach (var parameter in parameters)
+                    {
+                        <input type="hidden" name="resources[@parameter.Index].@parameter.Name" value="@parameter.Value" />
+                    }
+                    <div class="field has-addons">
+                        <div class="control">
+                            <input type="search" class="input" name="search" placeholder="Search..." value="@resourceSearch">
+                        </div>
+                        <div class="control">
+                            <button type="submit" class="button">Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>

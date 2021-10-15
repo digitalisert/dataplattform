@@ -6,7 +6,7 @@
     ViewData["Title"] = "Resource Page";
 }
 
-<partial name="~/Views/Shared/_Topbar.cshtml" model="ViewBag.ResourceQuery" />
+<partial name="~/Views/Shared/_Navbar.cshtml" model="ViewBag.ResourceQuery" />
 
 @if (Model.Any(r => r.Tags.Contains("@wkt")))
 {
@@ -17,7 +17,7 @@
   <partial name="~/Views/Shared/_Breadcrumbs.cshtml" model="ViewBag.ResourceQuery" />
   @if (Model.Skip(1).Any())
   {
-    <partial name="~/Views/Shared/_Accordion.cshtml" />
+    <partial name="~/Views/Shared/_List.cshtml" />
   }
   else if (Model.Any())
   {

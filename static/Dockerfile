@@ -5,8 +5,8 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 WORKDIR /build/map
-COPY map/package.json map/package-lock.json ./
-RUN npm ci
+COPY map/package.json ./
+RUN npm install
 COPY map .
 RUN npm run build
 

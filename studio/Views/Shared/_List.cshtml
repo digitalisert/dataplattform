@@ -50,28 +50,51 @@
                     }
                 </div>
             </div>
-              <div class="list-item-controls">
-                  <div class="tags are-medium">
-                      @foreach (var type in resource.Type ?? new string[] { })
-                      {
-                          <span class="tag primary">@type</span>
-                      }
-                      @foreach (var subType in resource.SubType ?? new string[] { })
-                      {
-                          <span class="tag info">@subType</span>
-                      }
-                      @foreach (var status in resource.Status ?? new string[] { })
-                      {
-                          <span class="tag">@status</span>
-                      }
-                  </div>
-                  <div class="tags mt-1 is-right">
-                      @foreach (var tags in resource.Tags ?? new string[] { })
-                      {
-                          <span class="tag">@tags</span>
-                      }
-                  </div>
-              </div>
+            <div class="list-item-controls is-flex-shrink-1">
+                <div class="tags are-medium is-right mb-0">
+                    <span class="tag is-primary">@resource.Context</span>
+                    @foreach (var type in resource.Type ?? new string[] { })
+                    {
+                        <span class="tag is-link">@type</span>
+                    }
+                    @foreach (var subType in resource.SubType ?? new string[] { })
+                    {
+                        <span class="tag is-info">@subType</span>
+                    }
+                    @foreach (var status in resource.Status ?? new string[] { })
+                    {
+                        <span class="tag">@status</span>
+                    }
+                </div>
+                @if ((resource.Tags ?? new string[] { }).Any())
+                {
+                    <div class="field is-grouped is-grouped-multiline is-grouped-right">
+                        @if (resource.Tags.Any(t => !t.Contains(":")))
+                        {
+                            <div class="control">
+                                <div class="tags">
+                                    @foreach (var tags in (resource.Tags ?? new string[] { }).Where(t => !t.Contains(":")))
+                                    {
+                                        <span class="tag">@tags</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        @foreach(var tagG in resource.Tags.Where(t => t.Contains(":")).GroupBy(t => t.Substring(0, t.IndexOf(":"))))
+                        {
+                            <div class="control">
+                                <div class="tags has-addons">
+                                    <span class="tag is-info is-light">@tagG.Key</span>
+                                    @foreach (var tags in tagG)
+                                    {
+                                        <span class="tag is-info">@tags.Substring(tagG.Key.Length + 1)</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
         </li>
     }
 </ul>

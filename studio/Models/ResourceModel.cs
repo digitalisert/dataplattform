@@ -55,8 +55,8 @@ namespace Digitalisert.Dataplattform.Studio.Models
             new Facet { FieldName = "Context" },
             new Facet { FieldName = "Type" },
             new Facet { FieldName = "SubType" },
-            new Facet { FieldName = "Tags" },
             new Facet { FieldName = "Status" },
+            new Facet { FieldName = "Tags" },
             new Facet { FieldName = "Properties" }
         };
 

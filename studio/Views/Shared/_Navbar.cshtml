@@ -14,9 +14,9 @@
         ).Union(
             (r.resource.SubType ?? new string[] { }).Select(t => new { Name = "SubType", Value = t, Index = r.i } )
         ).Union(
-            (r.resource.Tags ?? new string[] { }).Select(t => new { Name = "Tags", Value = t, Index = r.i } )
-        ).Union(
             (r.resource.Status?? new string[] { }).Select(t => new { Name = "Status", Value = t, Index = r.i } )
+        ).Union(
+            (r.resource.Tags ?? new string[] { }).Select(t => new { Name = "Tags", Value = t, Index = r.i } )
         )
     );
 
@@ -44,24 +44,23 @@
                         {
                             <div class="navbar-item">
                                 <a href="#">@valueG.Key</a>
-                                <div class="tags are-small has-addons">
-                                    @foreach (var value in valueG.OrderBy(v => v.Range))
-                                    {
-                                        var query = String.Join("&", parameters.Select(p => "resources[" + p.Index + "]." + p.Name + "=" + p.Value).Union(new[] { "resources[0]." + name + "=" + value.Range } ).Union(search));
-                                        <a class="tag" href="?@query">
-                                        @value.Range.Substring(valueG.Key.Length + 1)
-                                        <span class="is-rounded">@value.Count</span>
-                                        </a>
-                                    }
-                                </div>
                             </div>
+                            @foreach (var value in valueG.OrderBy(v => v.Range))
+                            {
+                                var query = String.Join("&", parameters.Select(p => "resources[" + p.Index + "]." + p.Name + "=" + p.Value).Union(new[] { "resources[0]." + name + "=" + value.Range } ).Union(search));
+                                <a class="navbar-item" href="?@query">
+                                    @value.Range.Substring(valueG.Key.Length + 1)
+                                    <span class="tag is-rounded ml-1">@value.Count</span>
+                                </a>
+                            }
+                            <hr class="navbar-divider">
                         }
                         @foreach(var value in facet.Value.Values.Where(v => !v.Range.Contains(":")).OrderBy(v => v.Range))
                         {
                             var query = String.Join("&", parameters.Select(p => "resources[" + p.Index + "]." + p.Name + "=" + p.Value).Union(new[] { "resources[0]." + name + "=" + value.Range } ).Union(search));
                             <a class="navbar-item" href="?@query">
                                 @value.Range
-                                <span class="tag is-rounded">@value.Count</span>
+                                <span class="tag is-rounded ml-1">@value.Count</span>
                             </a>
                         }
                     </div>

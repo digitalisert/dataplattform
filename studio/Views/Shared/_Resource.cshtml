@@ -14,9 +14,10 @@
 }
 
 <div class="buttons">
+    <a href="/Studio/Resource?resources[0].Context=@(Model.Context)" class="button is-primary">@Model.Context</a>
     @foreach (var type in Model.Type ?? new string[] { })
     {
-        <a href="/Studio/Resource?resources[0].Type=@type" class="button is-primary">@type</a>
+        <a href="/Studio/Resource?resources[0].Type=@type" class="button is-link">@type</a>
     }
 
     @foreach (var subType in Model.SubType ?? new string[] { })

@@ -11,7 +11,7 @@ FROM mcr.microsoft.com/dotnet/runtime:5.0 AS resourcemodel
 WORKDIR /app
 COPY --from=build-env /app/out .
 
-FROM ravendb/ravendb:5.2.2-ubuntu.20.04-x64
+FROM ravendb/ravendb:5.2.3-ubuntu.20.04-x64
 
 COPY --from=resourcemodel \
     /app/Digitalisert.Dataplattform.ResourceModel.dll \

@@ -57,18 +57,18 @@ namespace Digitalisert.Dataplattform
                     Tags = resource.Tags.Union(properties.Where(p => p.Name == "@tags").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, properties))).Select(v => v.ToString()).Distinct(),
                     Properties = properties.Where(p => !p.Name.StartsWith("@")),
                     _ = (
-                        from property in properties
+                        from property in properties.Where(p => !p.Name.StartsWith("@"))
                         group property by property.Name into propertyG
                         select CreateField(
                             propertyG.Key,
                             propertyG.Where(p => !p.Tags.Contains("@wkt")).SelectMany(p => p.Value).Select(v => v.ToString()).Union(
                                 from propertyresource in propertyG.SelectMany(p => p.Resources)
-                                from fieldvalue in new[] { propertyresource.ResourceId }.Union(propertyresource.Code).Union(propertyresource.Title)
+                                from fieldvalue in new[] { propertyresource.ResourceId }.Union(propertyresource.Code).Union(propertyresource.Title).Union(propertyresource.SubTitle)
                                 select fieldvalue
                             ).Where(v => !String.IsNullOrWhiteSpace(v)).Distinct()
                         )
                     ).Union(
-                        from property in properties
+                        from property in properties.Where(p => !p.Name.StartsWith("@"))
                         group property by property.Name into propertyG
                         from resourcetype in propertyG.SelectMany(p => p.Resources).SelectMany(r => r.Type).Distinct()
                         select CreateField(
@@ -83,14 +83,14 @@ namespace Digitalisert.Dataplattform
                         new object[] {
                             CreateField(
                                 "@resources",
-                                properties.SelectMany(p => p.Resources).Select(r => r.Context + "/" + r.ResourceId).Distinct()
+                                properties.Where(p => !p.Name.StartsWith("@")).SelectMany(p => p.Resources).Select(r => r.Context + "/" + r.ResourceId).Distinct()
                             )
                         }
                     ).Union(
                         new object[] {
                             CreateField(
                                 "Properties",
-                                properties.Select(p => p.Name).Where(n => !n.StartsWith("@")).Distinct(),
+                                properties.Where(p => !p.Name.StartsWith("@")).Select(p => p.Name).Where(n => !n.StartsWith("@")).Distinct(),
                                 new CreateFieldOptions { Indexing = FieldIndexing.Exact }
                             )
                         }

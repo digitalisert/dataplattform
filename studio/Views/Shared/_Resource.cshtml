@@ -86,7 +86,7 @@
                       </p>
                   }
               }
-              @if (property.Resources != null)
+              @if (property.Resources != null && property.Resources.Any())
               {
                   <partial name="~/Views/Shared/_List.cshtml" model="property.Resources"/>
               }

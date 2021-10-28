@@ -31,12 +31,34 @@
     }
 </div>
 
-<div class="buttons are-small">
-    @foreach (var tags in Model.Tags ?? new string[] { })
-    {
-        <a href="/Studio/Resource?resources[0].Tags=@tags" class="button">@tags</a>
-    }
-</div>
+@if ((Model.Tags ?? new string[] { }).Any())
+{
+    <div class="field is-grouped is-grouped-multiline">
+        @if (Model.Tags.Any(t => !t.Contains(":")))
+        {
+            <div class="control">
+                <div class="tags">
+                    @foreach (var tags in (Model.Tags ?? new string[] { }).Where(t => !t.Contains(":")))
+                    {
+                        <span class="tag">@tags</span>
+                    }
+                </div>
+            </div>
+        }
+        @foreach(var tagG in Model.Tags.Where(t => t.Contains(":")).GroupBy(t => t.Substring(0, t.IndexOf(":"))))
+        {
+            <div class="control">
+                <div class="tags has-addons">
+                    <span class="tag is-info is-light">@tagG.Key</span>
+                    @foreach (var tags in tagG)
+                    {
+                        <span class="tag is-info">@tags.Substring(tagG.Key.Length + 1)</span>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
 
 @foreach (var body in Model.Body ?? new string[] { })
 {

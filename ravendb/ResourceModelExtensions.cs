@@ -224,15 +224,6 @@ namespace Digitalisert.Dataplattform
             }
         }
 
-        public static string GenerateHash(string str)
-        {
-            using (var md5Hasher = System.Security.Cryptography.MD5.Create())
-            {
-                var data = md5Hasher.ComputeHash(System.Text.Encoding.Default.GetBytes(str));
-                return Convert.ToBase64String(data).Substring(0,2);
-            }
-        }
-
         public static IEnumerable<string> WKTEncodeGeohash(string wkt)
         {
             var geometry = new WKTReader().Read(wkt);

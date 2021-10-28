@@ -16,23 +16,6 @@ namespace Digitalisert.Dataplattform
                 from type in resource.Type
                 from ontologyreference in LoadDocument<ResourceMappingReferences>("ResourceMappingReferences/" + resource.Context + "/" + type).ReduceOutputs
                 let ontology = LoadDocument<ResourceMapping>(ontologyreference)
-                where ontology != null || type.StartsWith("@")
-                select new Resource
-                {
-                    Context = resource.Context,
-                    ResourceId = type + "/" + GenerateHash(resource.ResourceId).Replace("/", "/-"),
-                    Tags = ontology.Tags.Union(new[] { "@ontology" }),
-                    Properties = ontology.Properties,
-                    Source = new[] { MetadataFor(resource).Value<String>("@id") },
-                    Modified = MetadataFor(resource).Value<DateTime>("@last-modified")
-                }
-            );
-
-            AddMap<ResourceMapping>(resources =>
-                from resource in resources
-                from type in resource.Type
-                from ontologyreference in LoadDocument<ResourceMappingReferences>("ResourceMappingReferences/" + resource.Context + "/" + type).ReduceOutputs
-                let ontology = LoadDocument<ResourceMapping>(ontologyreference)
                 where ontology != null
 
                 from ontologypropertyresource in (

@@ -81,7 +81,11 @@ namespace Digitalisert.Dataplattform.Studio.Models
                 {
                     foreach (var value in (field.Values ?? new string[] { }).Where(v => !String.IsNullOrWhiteSpace(v)))
                     {
-                        if (value.StartsWith("!"))
+                        if (value.StartsWith("!") && value.EndsWith("*"))
+                        {
+                            query.Not.WhereStartsWith(field.Name, value.TrimStart('!').TrimEnd('*'));
+                        }
+                        else if (value.StartsWith("!"))
                         {
                             query.WhereNotEquals(field.Name, value.TrimStart('!'));
                         }

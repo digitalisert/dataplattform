@@ -42,8 +42,9 @@
                     <div class="navbar-dropdown">
                         @foreach(var valueG in facet.Value.Values.Where(v => v.Range.Contains(":")).GroupBy(v => v.Range.Substring(0, v.Range.IndexOf(":"))))
                         {
+                            var gquery = String.Join("&", parameters.Select(p => "resources[" + p.Index + "]." + p.Name + "=" + p.Value).Union(new[] { "resources[0]." + name + "=" + valueG.Key + ":*" } ).Union(search));
                             <div class="navbar-item">
-                                <a href="#">@valueG.Key</a>
+                                <a href="?@gquery">@valueG.Key</a>
                             </div>
                             @foreach (var value in valueG.OrderBy(v => v.Range))
                             {

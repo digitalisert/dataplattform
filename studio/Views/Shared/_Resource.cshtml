@@ -10,10 +10,10 @@
 </h1>
 @if ((Model.SubTitle ?? new string[] { }).Any())
 {
-    <h2 class="subtitle">@Model.SubTitle.FirstOrDefault()</h2>
+    <h2 class="subtitle mb-2">@Model.SubTitle.FirstOrDefault()</h2>
 }
 
-<div class="buttons">
+<div class="buttons mb-0">
     <a href="/Studio/Resource?resources[0].Context=@(Model.Context)" class="button is-primary">@Model.Context</a>
     @foreach (var type in Model.Type ?? new string[] { })
     {
@@ -47,7 +47,7 @@
   <dl>
       @foreach (var property in Model.Properties ?? new ResourceModel.Property[] { } )
       {
-          <dt class="label">@property.Name</dt>
+          <dt class="label mb-0">@property.Name</dt>
           <dd>
               @foreach (var value in property.Value ?? new string[] { })
               {

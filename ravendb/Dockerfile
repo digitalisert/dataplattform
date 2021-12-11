@@ -1,23 +1,23 @@
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS resourcemodel
 WORKDIR /app
 
 COPY *.csproj ./
 RUN dotnet restore
 
 COPY *.cs ./
-RUN dotnet publish -c Release -o out
+RUN dotnet publish -c Release -o out -r linux-x64 --self-contained
 
-FROM mcr.microsoft.com/dotnet/runtime:5.0 AS resourcemodel
-WORKDIR /app
-COPY --from=build-env /app/out .
-
-FROM ravendb/ravendb:5.2.3-ubuntu.20.04-x64
+FROM ravendb/ravendb:5.2.4-ubuntu.20.04-x64
 
 COPY --from=resourcemodel \
-    /app/Digitalisert.Dataplattform.ResourceModel.dll \
-    /app/Geohash.dll \
-    /app/MoreLinq.dll \
-    /app/NetTopologySuite.dll \
-    /app/ProjNET.dll \
-    /app/SmartFormat.dll \
+    /app/out/Digitalisert.Dataplattform.ResourceModel \
+    /app/out/Digitalisert.Dataplattform.ResourceModel.dll \
+    /app/out/Digitalisert.Dataplattform.ResourceModel.deps.json \
+    /app/out/Geohash.dll \
+    /app/out/MoreLinq.dll \
+    /app/out/NetTopologySuite.dll \
+    /app/out/ProjNET.dll \
+    /app/out/SmartFormat.dll \
     /opt/RavenDB/Server/
+
+CMD (sleep 5; /opt/RavenDB/Server/Digitalisert.Dataplattform.ResourceModel && echo "ResourceModel initialisert!") & exec /opt/RavenDB/run-raven.sh

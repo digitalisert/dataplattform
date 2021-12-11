@@ -33,16 +33,6 @@ services:
     restart:
       always
 
-  init:
-    build:
-      context: ravendb
-      target: resourcemodel
-    networks:
-      - backend
-    depends_on:
-      - ravendb
-    entrypoint: ["dotnet", "Digitalisert.Dataplattform.ResourceModel.dll"]
-
   static:
     build: static
     labels:

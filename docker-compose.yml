@@ -40,6 +40,8 @@ services:
       - traefik.http.routers.static.rule=PathPrefix(`/static/`)
     networks:
       - frontend
+    volumes:
+      - static:/usr/share/nginx/html/static
     restart: always
 
   studio:
@@ -51,6 +53,8 @@ services:
     networks:
       - frontend
       - backend
+    volumes:
+      - static:/app/wwwroot/static
     environment:
       - ASPNETCORE_ENVIRONMENT
     depends_on:
@@ -99,3 +103,4 @@ volumes:
   ravendata:
   drupalfiles:
   pgdata:
+  static:

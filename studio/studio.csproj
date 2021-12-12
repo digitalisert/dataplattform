@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Markdig" Version="0.22.0" />
-    <PackageReference Include="RavenDB.Client" Version="5.2.3" />
+    <PackageReference Include="Markdig" Version="0.26.0" />
+    <PackageReference Include="RavenDB.Client" Version="5.2.4" />
   </ItemGroup>
 
 </Project>

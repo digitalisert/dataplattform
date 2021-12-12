@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json;
 using Raven.Client.Documents;
@@ -19,8 +18,6 @@ namespace Digitalisert.Dataplattform
                 store.Conventions.FindCollectionName = t => t.Name;
                 store.Initialize();
 
-                var stopwatch = Stopwatch.StartNew();
-
                 if (!store.Maintenance.Server.Send(new GetDatabaseNamesOperation(0, 25)).Contains(store.Database))
                 {
                     store.Maintenance.Server.Send(new CreateDatabaseOperation(new DatabaseRecord(store.Database)));
@@ -33,9 +30,6 @@ namespace Digitalisert.Dataplattform
                 new ResourceDerivedPropertyIndex().Execute(store);
                 new ResourceReasonerIndex().Execute(store);
                 new ResourceIndex().Execute(store);
-
-                stopwatch.Stop();
-                Console.WriteLine(stopwatch.Elapsed);
             }
         }
     }

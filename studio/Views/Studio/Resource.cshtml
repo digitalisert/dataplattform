@@ -11,13 +11,13 @@
 <partial name="~/Views/Shared/_Map.cshtml" />
 
 <div class="grid-container fluid">
-  <partial name="~/Views/Shared/_Breadcrumbs.cshtml" model="ViewBag.ResourceQuery" />
-  @if (Model.Skip(1).Any())
-  {
-    <partial name="~/Views/Shared/_List.cshtml" />
-  }
-  else if (Model.Any())
-  {
-    <partial name="~/Views/Shared/_Resource.cshtml" model="Model.First()"/>
-  }
+    <partial name="~/Views/Shared/_Breadcrumbs.cshtml" model="ViewBag.ResourceQuery" />
+    @if (Model.Skip(1).Any())
+    {
+        <partial name="~/Views/Shared/_List.cshtml" />
+    }
+    else if (Model.Any())
+    {
+        <partial name="~/Views/Shared/_Resource.cshtml" model="Model.First()"/>
+    }
 </div>

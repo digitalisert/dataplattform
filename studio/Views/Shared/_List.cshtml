@@ -9,7 +9,7 @@
 <ul class="list has-visible-pointer-controls ml-0 mt-0">
     @foreach(var resource in Model.Where(r => r.ResourceId != null || (r.Code ?? new string[] {}).Any() || (r.Title ?? new string[] {}).Any() || (r.SubTitle ?? new string[] {}).Any()))
     {
-        <li class="list-item is-align-items-start">
+        <li class="list-item is-align-items-start" id="@resource.ResourceId">
             <div class="list-item-content">
                 <div class="list-item-title" data-tab-content>
                     @if (resource.ResourceId == null)

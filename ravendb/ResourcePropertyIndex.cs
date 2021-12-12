@@ -142,23 +142,22 @@ namespace Digitalisert.Dataplattform
             );
 
             AddMap<ResourceOntology>(ontologies =>
-                from ontology in ontologies.Where(r => r.Tags.Contains("@push") || r.Properties.Any(p => p.Tags.Contains("@push")))
+                from ontology in ontologies.Where(r => r.Tags.Contains("@push"))
                 from pushresource in (
-                    from tags in ontology.Tags.Where(t => t == "@push" || t == "@pull")
+                    from tags in ontology.Tags.Where(t => t == "@push")
                     select new Resource {
                         Context = ontology.Context,
                         ResourceId = ontology.ResourceId
                     }
                 ).Union(
-                    from tags in ontology.Tags.Where(t => t == "@alias")
                     from resourceproperty in ontology.Properties.Where(p => p.Name == "@resource")
+                    where ontology.Tags.Any(t => t == "@alias")
                     from aliasresource in resourceproperty.Resources
                     select new Resource {
                         Context = aliasresource.Context,
                         ResourceId = aliasresource.ResourceId
                     }
                 ).Union(
-                    from tags in ontology.Tags.Where(t => t == "@pull")
                     from aliasproperty in ontology.Properties.Where(p => p.Name == "@alias")
                     from aliasreference in LoadDocument<ResourceOntologyReferences>(aliasproperty.Source).Where(r => r != null)
                     from aliasresource in LoadDocument<ResourceOntology>(aliasreference.ReduceOutputs).Where(r => r != null)
@@ -170,19 +169,65 @@ namespace Digitalisert.Dataplattform
                     }
                 )
 
+                let pushmappingreference = LoadDocument<ResourceMappingReferences>("ResourceMappingReferences/" + pushresource.Context + "/" + pushresource.ResourceId)
+
+                from pushpropertyresource in
+                    from resourcemapping in LoadDocument<ResourceMapping>(pushmappingreference.ReduceOutputs)
+                    let propertyresourceontologyreference = LoadDocument<ResourceMappingReferences>(resourcemapping.Type.Select(type => "ResourceMappingReferences/" + resourcemapping.Context + "/" + type))
+                    let propertyresourceontology = LoadDocument<ResourceMapping>(propertyresourceontologyreference.SelectMany(r => r.ReduceOutputs))
+
+                    select new Resource {
+                        Context = resourcemapping.Context,
+                        ResourceId = resourcemapping.ResourceId,
+                        Type = resourcemapping.Type,
+                        SubType = resourcemapping.SubType,
+                        Status = resourcemapping.Status,
+                        Tags = resourcemapping.Tags,
+                        Properties =
+                            from resourcemappingontologyproperty in propertyresourceontology.SelectMany(r => r.Properties).Where(p => new string[] { "@type", "@subtype", "@status", "@tags" }.Contains(p.Name))
+                            let derivedproperties =
+                                from derivedproperty in resourcemapping.Properties
+                                where resourcemappingontologyproperty.Tags.Contains("@derive")
+                                from ontologyderivedproperty in resourcemappingontologyproperty.Properties
+                                where ontologyderivedproperty.Name == derivedproperty.Name
+                                    && ontologyderivedproperty.Tags.All(t => derivedproperty.Tags.Contains(t))
+                                    && (ontologyderivedproperty.From == null || ontologyderivedproperty.From <= (derivedproperty.Thru ?? DateTime.MaxValue))
+                                    && (ontologyderivedproperty.Thru == null || ontologyderivedproperty.Thru >= (derivedproperty.From ?? DateTime.MinValue))
+                                select derivedproperty
+                            select new Property {
+                                Name = resourcemappingontologyproperty.Name,
+                                Value = (
+                                    from value in resourcemappingontologyproperty.Value
+                                    from formattedvalue in ResourceFormat(value, resourcemapping, derivedproperties)
+                                    select formattedvalue
+                                ).Where(v => !String.IsNullOrWhiteSpace(v))
+                            }
+                    }
+
                 from resource in LoadDocument<ResourceMapping>(ontology.Source).Where(r => r != null)
+                let resourceontologyreference = LoadDocument<ResourceMappingReferences>(resource.Type.Select(type => "ResourceMappingReferences/" + resource.Context + "/" + type))
+                from resourceontology in LoadDocument<ResourceMapping>(resourceontologyreference.SelectMany(r => r.ReduceOutputs))
+
+                from ontologyresource in resourceontology.Properties.SelectMany(p => p.Resources).Where(r => r.Tags.Contains("@push") || r.Properties.Any(p => p.Tags.Contains("@push")))
+
+                where ontologyresource.Context == pushpropertyresource.Context
+                    && ontologyresource.Type.All(t => pushpropertyresource.Type.Union(pushpropertyresource.Properties.Where(p => p.Name == "@type").SelectMany(p => p.Value).Select(v => v.ToString())).Contains(t.ToString()))
+                    && ontologyresource.SubType.All(t => pushpropertyresource.SubType.Union(pushpropertyresource.Properties.Where(p => p.Name == "@subtype").SelectMany(p => p.Value).Select(v => v.ToString())).Contains(t.ToString()))
+                    && ontologyresource.Status.All(s => pushpropertyresource.Status.Union(pushpropertyresource.Properties.Where(p => p.Name == "@status").SelectMany(p => p.Value).Select(v => v.ToString())).Contains(s.ToString()))
+                    && ontologyresource.Tags.All(t => pushpropertyresource.Tags.Union(pushpropertyresource.Properties.Where(p => p.Name == "@tags").SelectMany(p => p.Value).Select(v => v.ToString())).Contains(t.ToString()))
+
                 select new Resource {
                     Context = pushresource.Context,
                     ResourceId = pushresource.ResourceId,
-                    Type = ontology.Properties.Where(p => p.Name == "@type").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, null)).Distinct(),
-                    SubType = ontology.Properties.Where(p => p.Name == "@subtype").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, null)).Distinct(),
-                    Title = ontology.Properties.Where(p => p.Name == "@title").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, null)).Distinct(),
-                    SubTitle = ontology.Properties.Where(p => p.Name == "@subtitle").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, null)).Distinct(),
-                    Code = ontology.Properties.Where(p => p.Name == "@code").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, null)).Distinct(),
-                    Status = ontology.Properties.Where(p => p.Name == "@status").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, null)).Distinct(),
-                    Tags = ontology.Properties.Where(p => p.Name == "@tags").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, null)).Distinct(),
+                    Type = ontologyresource.Properties.Where(p => p.Name == "@type").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, null)).Distinct(),
+                    SubType = ontologyresource.Properties.Where(p => p.Name == "@subtype").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, null)).Distinct(),
+                    Title = ontologyresource.Properties.Where(p => p.Name == "@title").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, null)).Distinct(),
+                    SubTitle = ontologyresource.Properties.Where(p => p.Name == "@subtitle").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, null)).Distinct(),
+                    Code = ontologyresource.Properties.Where(p => p.Name == "@code").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, null)).Distinct(),
+                    Status = ontologyresource.Properties.Where(p => p.Name == "@status").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, null)).Distinct(),
+                    Tags = ontologyresource.Properties.Where(p => p.Name == "@tags").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, resource, null)).Distinct(),
                     Properties = (
-                        from ontologyproperty in ontology.Properties.Where(p => !p.Name.StartsWith("@"))
+                        from ontologyproperty in ontologyresource.Properties.Where(p => !p.Name.StartsWith("@"))
                         let property = (!ontologyproperty.Tags.Contains("@derive")) ? resource.Properties.Where(p => p.Name == ontologyproperty.Name) :
                             from ontologyderivedproperty in ontologyproperty.Properties
                             from derivedproperty in resource.Properties
@@ -194,7 +239,7 @@ namespace Digitalisert.Dataplattform
 
                         select new Property {
                             Name = ontologyproperty.Name,
-                            Value = property.SelectMany(p => p.Value).Concat(ontologyproperty.Value.SelectMany(v => ResourceFormat(v, resource, property))),
+                            Value = (ontologyproperty.Value.Any()) ? ontologyproperty.Value.SelectMany(v => ResourceFormat(v, resource, property)) : property.SelectMany(p => p.Value),
                             Tags = property.SelectMany(p => p.Tags).Union(ontologyproperty.Tags).Select(v => v).Distinct(),
                             Resources = (
                                 from propertyresource in property.SelectMany(p => p.Resources)

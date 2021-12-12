@@ -1,7 +1,55 @@
-import React, { useEffect, useState, CSSProperties } from 'react';
-import { MapContainer, Marker, LayersControl, LayerGroup, Polygon, Polyline, ScaleControl, TileLayer, Tooltip, useMap } from 'react-leaflet';
+import React, { useCallback, useEffect, useState, CSSProperties } from 'react';
+import ReactDOM from 'react-dom';
+import { MapContainer, Marker, LayersControl, LayerGroup, Polygon, Polyline, Popup, ScaleControl, TileLayer, Tooltip, useMap, WMSTileLayer } from 'react-leaflet';
 import L from 'leaflet';
 import Wkt from 'wicket';
+
+function ResourcePortal({children, resource } : any) {
+  const [container] = React.useState(() => {
+    return document.createElement('div');
+  });
+
+  React.useEffect(() => {
+    var parent = document.getElementById(resource.resourceId);
+    parent?.appendChild(container)
+    return () => {
+      parent?.removeChild(container)
+    }
+  }, [])
+
+  return ReactDOM.createPortal(children, container)
+}
+
+function Resource({children, resource } : any) {
+  const [visible, setVisible] = useState('false');
+  const onOpen = useCallback(() => { setVisible('true') }, []);
+  const onClose = useCallback(() => { setVisible('false') }, []);
+  const onClick = useCallback(() => { document.getElementById(resource.resourceId)?.scrollIntoView() }, []);
+  const onClickBack = useCallback(() => { document.getElementById('map')?.scrollIntoView() }, []);
+  const onClickClose = useCallback(() => { setVisible('false') }, []);
+  return (
+    <>
+      <Tooltip>{resource.title}</Tooltip>
+      <Popup onOpen={ onOpen } onClose={ onClose }>
+        <a onClick={ onClick } className="button is-block is-clipped">{resource.title}</a>
+      </Popup>
+      <ResourcePortal resource={resource}>
+        {visible == 'true' &&
+          <nav className="level is-overlay" style={ { backgroundColor: 'rgba(10, 10, 10, 0.1)' } }>
+            <div className="level-item has-text-centered">
+              <div className="buttons">
+                <button onClick={ onClickBack } className="button box">Tilbake til kart</button>
+                <button onClick={ onClickClose } className="button box">
+                  <span className="delete"></span>
+                </button>
+              </div>
+            </div>
+          </nav>
+        }
+      </ResourcePortal>
+    </>
+  )
+}
 
 function MapContent({resource, resources} : any) {
   const [primaryMapLayer, setPrimaryMapLayer] = useState<any[]>([]);
@@ -12,6 +60,7 @@ function MapContent({resource, resources} : any) {
     const fetchResourceData = async (resources: string[], primary : boolean) => {
       const resourceData = await Promise.all(resources.map(r => fetch("/Studio/api/Resource/" + r).then(r => r.json())));
       const fillOpacity = (primary) ? 0.2 : 0.1;
+      const pathOptions= (primary) ? { color: 'blue' } : { color: 'red' };
       const responsecomponents =
         [].concat(...resourceData).flatMap((resource: any, rindex: Number) => {
           return resource.properties.filter((p: any) => p.tags.includes("@wkt")).flatMap((property: any, pindex: Number) => {
@@ -20,13 +69,13 @@ function MapContent({resource, resources} : any) {
               if (wkt.type === "point") {
                 return [
                   <Marker key={rindex + "-" + pindex + "-" + vindex} position={[wkt.components[0].y, wkt.components[0].x]} icon={L.divIcon()}>
-                    <Tooltip>{resource.title}</Tooltip>
+                    <Resource resource={resource}></Resource>
                   </Marker>
                 ]
               } else if (wkt.type === "linestring") {
                 return [
                   <Polyline key={rindex + "-" + pindex + "-" + vindex} positions={ wkt.components.map((c : any) => { return [c.y, c.x] } ) }>
-                    <Tooltip>{resource.title}</Tooltip>
+                    <Resource resource={resource}></Resource>
                   </Polyline>
                 ]
               } else if (wkt.type === "multipoint") {
@@ -34,7 +83,7 @@ function MapContent({resource, resources} : any) {
                   wkt.components.map(( point : any, cindex: Number) => {
                     return (
                       <Marker key={rindex + "-" + pindex + "-" + vindex + "-" + cindex} position={ [point[0].y, point[0].x] } icon={L.divIcon()}>
-                        <Tooltip>{resource.title}</Tooltip>
+                        <Resource resource={resource}></Resource>
                       </Marker>
                     )
                   });
@@ -54,8 +103,8 @@ function MapContent({resource, resources} : any) {
                       : polygon[0].map((c: any) => { return [c.y, c.x] } );
 
                     return (
-                      <Polygon key={rindex + "-" + pindex + "-" + vindex + "-" + cindex} positions={ polygonpositions }>
-                        <Tooltip>{resource.title}</Tooltip>
+                      <Polygon key={rindex + "-" + pindex + "-" + vindex + "-" + cindex} positions={ polygonpositions } fillOpacity={fillOpacity} pathOptions={pathOptions}>
+                        <Resource resource={resource}></Resource>
                       </Polygon>
                     )
                   });
@@ -66,8 +115,8 @@ function MapContent({resource, resources} : any) {
                   ? wkt.components.map((co: any) => { return co.map((c: any) => { return [c.y, c.x] } ) })
                   : wkt.components[0].map((c: any) => { return [c.y, c.x] } );
                 return [
-                  <Polygon key={rindex + "-" + pindex + "-" + vindex} positions={ polygonpositions } fillOpacity={fillOpacity}>
-                    <Tooltip>{resource.title}</Tooltip>
+                  <Polygon key={rindex + "-" + pindex + "-" + vindex} positions={ polygonpositions } fillOpacity={fillOpacity} pathOptions={pathOptions}>
+                      <Resource resource={resource}></Resource>
                   </Polygon>
                 ]
               }

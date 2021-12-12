@@ -37,7 +37,7 @@
                 <div class="list-item-description">
                     @foreach (var body in resource.Body ?? new string[] { })
                     {
-                        <p class="text-break">@body</p>
+                        @Html.Raw(Markdig.Markdown.ToHtml(body))
                     }
                     @if (resource.Id != null && highlightings.ContainsKey(resource.Id))
                     {

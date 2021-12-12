@@ -37,6 +37,7 @@ namespace Digitalisert.Dataplattform
                                 Title = propertyresourceoutputs.SelectMany(r => r.Title).Distinct(),
                                 SubTitle = propertyresourceoutputs.SelectMany(r => r.SubTitle).Distinct(),
                                 Code = propertyresourceoutputs.SelectMany(r => r.Code).Distinct(),
+                                Body = propertyresourceoutputs.SelectMany(r => r.Properties.Where(p => p.Name == "@body").SelectMany(p => p.Value).SelectMany(v => ResourceFormat(v, r, null))).Distinct(),
                                 Status = propertyresourceoutputs.SelectMany(r => r.Status).Distinct(),
                                 Tags = propertyresourceoutputs.SelectMany(r => r.Tags).Union(
                                     propertyresourceoutputs.SelectMany(r => r.Properties).SelectMany(p => p.Tags).Where(t => t == "@wkt").Take(1)

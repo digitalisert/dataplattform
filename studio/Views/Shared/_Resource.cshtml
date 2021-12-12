@@ -62,7 +62,7 @@
 
 @foreach (var body in Model.Body ?? new string[] { })
 {
-    <p>@body</p>
+    @Html.Raw(Markdig.Markdown.ToHtml(body))
 }
 
 <div class="content">

@@ -1,26 +1,38 @@
 @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
 @model IEnumerable<ResourceModel.Resource>
 
-@if (Model.Skip(1).Any())
+@if (Model.Any(r => r.Tags.Contains("@wkt") || r.Properties.Any(p => p.Tags.Contains("@wkt") && p.Value.Any())))
 {
-    <div id="map" class="image is-3by1">
-        @foreach (var resource in Model.Where(r => r.Tags.Contains("@wkt")))
+    if (Model.Skip(1).Any())
+    {
+        <div id="map" class="image is-3by1">
+            @foreach (var resource in Model.Where(r => r.Tags.Contains("@wkt") || r.Properties.Any(p => p.Tags.Contains("@wkt") && p.Value.Any()) ))
+            {
+                <a href="/Studio/Resource/@resource.Context/@resource.ResourceId" data-resource="@resource.Context/@resource.ResourceId">@resource.Title?.FirstOrDefault()</a>
+            }
+        </div>
+    }
+    else if (Model.Any())
+    {
+        if ((Model.Any(r => r.Properties.Any(p => p.Tags.Contains("@wkt") && p.Value.Any()))))
         {
-            <a href="/Studio/Resource/@resource.Context/@resource.ResourceId" data-resource="@resource.Context/@resource.ResourceId">@resource.Title?.FirstOrDefault()</a>
+            <div id="map" class="image is-3by1" data-resource="@Model.First().Context/@Model.First().ResourceId">
+                @foreach (var resource in Model.SelectMany(r => r.Properties).Where(p => p.Tags.Contains("@wkt") || p.Resources.Any(r => (r.Tags ?? new string[] {}).Contains("@wkt"))).SelectMany(p => p.Resources).Where(r => r.ResourceId != null))
+                {
+                    <a href="/Studio/Resource/@resource.Context/@resource.ResourceId" data-resource="@resource.Context/@resource.ResourceId">@resource.Title.FirstOrDefault()</a>
+                }
+            </div>
         }
-    </div>
-}
-else if (Model.Any())
-{
-    <div id="map" class="image is-3by1" data-resource="@Model.First().Context/@Model.First().ResourceId">
-        @foreach (var resource in Model.SelectMany(r => r.Properties).SelectMany(p => p.Resources).Where(r => r.ResourceId != null && r.Tags.Contains("@wkt")))
-        {
-            <a href="/Studio/Resource/@resource.Context/@resource.ResourceId" data-resource="@resource.Context/@resource.ResourceId">@resource.Title.FirstOrDefault()</a>
+        else {
+            <div id="map" class="image is-3by1">
+                @foreach (var resource in Model.SelectMany(r => r.Properties).SelectMany(p => p.Resources).Where(r => (r.Tags ?? new string[] {}).Contains("@wkt") && r.ResourceId != null))
+                {
+                    <a href="/Studio/Resource/@resource.Context/@resource.ResourceId" data-resource="@resource.Context/@resource.ResourceId">@resource.Title.FirstOrDefault()</a>
+                }
+            </div>
         }
-    </div>
-}
+    }
 
-@{
     foreach(var fileInfo in new System.IO.DirectoryInfo(WebHostEnvironment.WebRootPath + "/static/map/build/static/css").GetFiles("*.css"))
     {
         <link rel="stylesheet" href="~/static/map/build/static/css/@(fileInfo.Name)" asp-append-version="true" />

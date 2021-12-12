@@ -8,10 +8,7 @@
 
 <partial name="~/Views/Shared/_Navbar.cshtml" model="ViewBag.ResourceQuery" />
 
-@if (Model.Any(r => r.Tags.Contains("@wkt")))
-{
-  <partial name="~/Views/Shared/_Map.cshtml" />
-}
+<partial name="~/Views/Shared/_Map.cshtml" />
 
 <div class="grid-container fluid">
   <partial name="~/Views/Shared/_Breadcrumbs.cshtml" model="ViewBag.ResourceQuery" />

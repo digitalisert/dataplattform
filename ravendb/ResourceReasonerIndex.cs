@@ -23,9 +23,7 @@ namespace Digitalisert.Dataplattform
                     SubTitle = resource.SubTitle,
                     Code = resource.Code,
                     Status = resource.Status,
-                    Tags = resource.Tags.Union(
-                        resource.Properties.SelectMany(p => p.Tags).Where(t => t == "@wkt").Take(1)
-                    ),
+                    Tags = resource.Tags,
                     Properties = (
                         from property in resource.Properties.Where(r => !r.Name.StartsWith("@"))
                         select new Property

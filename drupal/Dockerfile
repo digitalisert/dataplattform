@@ -9,6 +9,9 @@ RUN composer require \
     'drupal/external_entities:^2.0@alpha' \
     'drupal/gin:^3.0-alpha37@alpha' \
     'drupal/gin_toolbar:1.0-beta20' \
+    'drupal/migrate_plus:^5.1' \
+    'drupal/migrate_source_csv:^3.4' \
+    'drupal/migrate_tools:5.x-dev@dev' \
     'drupal/paragraphs:^1.12' \
     'drush/drush'
 

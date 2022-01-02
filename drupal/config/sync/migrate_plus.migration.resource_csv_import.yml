@@ -1,0 +1,62 @@
+id: resource_csv_import
+label: Import resources
+migration_group: default
+
+source:
+  plugin: csv
+  path: /opt/drupal/config/sync/data/resources.csv
+  delimiter: ','
+  enclosure: '"'
+  header_offset: 0
+  ids:
+    - id
+  fields:
+    0:
+      name: id
+      label: 'Unique Id'
+    1:
+      name: title
+      label: 'Title'
+    3:
+      name: context
+      label: 'Context'
+    4:
+      name: resourceid
+      label: 'Resource ID'
+    5:
+      name: type
+      label: 'Type'
+    6:
+      name: body
+      label: 'Post body'
+    7:
+      name: properties
+      label: 'Properties'
+
+process:
+  title: title
+  context: context
+  resourceid: resourceid
+  resourcetype: type
+  body: body
+  properties:
+    -
+      plugin: explode
+      source: properties
+      delimiter: ';'
+    -
+      plugin: migration_lookup
+      migration: property_csv_import
+    -
+      plugin: sub_process
+      process:
+        target_id: '0'
+        target_revision_id: '1'
+
+destination:
+  plugin: entity:node
+  default_bundle: resource
+
+migration_dependencies:
+  required:
+    - property_csv_import

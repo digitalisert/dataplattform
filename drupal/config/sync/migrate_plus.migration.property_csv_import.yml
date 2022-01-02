@@ -1,0 +1,26 @@
+id: property_csv_import
+label: Import properties
+migration_group: default
+
+source:
+  plugin: csv
+  path: /opt/drupal/config/sync/data/properties.csv
+  delimiter: ','
+  enclosure: '"'
+  header_offset: 0
+  ids:
+    - id
+  fields:
+    0:
+      name: id
+      label: 'Unique Id'
+    1:
+      name: name
+      label: 'Name'
+
+process:
+  name: name
+
+destination:
+  plugin: entity_reference_revisions:paragraph
+  default_bundle: property

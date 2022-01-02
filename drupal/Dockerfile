@@ -20,16 +20,20 @@ RUN cp web/sites/default/default.settings.php web/sites/default/settings.php && 
     mkdir web/sites/default/files web/sites/default/files/styles && \
     chown -R www-data:www-data web/sites && \
     mkdir -p config/sync && \
-    chmod 777 config/sync
+    chmod 777 config/sync && \
+    mkdir -p export && \
+    chmod 777 export
 
 COPY \
     dataplattform-entrypoint.sh \
     post-start-drupal.sh \
+    export.sh \
     /usr/local/bin/
 
 RUN chmod +x \
     /usr/local/bin/dataplattform-entrypoint.sh \
-    /usr/local/bin/post-start-drupal.sh
+    /usr/local/bin/post-start-drupal.sh \
+    /usr/local/bin/export.sh
 
 ENTRYPOINT ["/usr/local/bin/dataplattform-entrypoint.sh"]
 

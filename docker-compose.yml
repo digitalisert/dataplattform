@@ -62,6 +62,13 @@ services:
       - static
     restart: always
 
+  etl:
+    build: etl
+    networks:
+      - etl
+    volumes:
+      - drupalexport:/app/export
+
   drupal:
     build: drupal
     labels:

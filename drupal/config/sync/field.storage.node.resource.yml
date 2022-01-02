@@ -1,0 +1,19 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - external_entities
+    - node
+id: node.resource
+field_name: resource
+entity_type: node
+type: entity_reference
+settings:
+  target_type: resource
+module: core
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

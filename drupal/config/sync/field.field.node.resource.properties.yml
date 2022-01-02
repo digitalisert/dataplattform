@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.properties
+    - node.type.resource
+  module:
+    - entity_reference_revisions
+id: node.resource.properties
+field_name: properties
+entity_type: node
+bundle: resource
+label: Properties
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles: null
+    negate: 0
+    target_bundles_drag_drop:
+      property:
+        weight: 2
+        enabled: false
+field_type: entity_reference_revisions

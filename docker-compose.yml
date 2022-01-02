@@ -74,6 +74,7 @@ services:
     volumes:
       - ./drupal/config/sync:/opt/drupal/config/sync
       - ./drupal/sites/default/settings.local.php:/opt/drupal/web/sites/default/settings.local.php
+      - drupalexport:/opt/drupal/export
       - drupalfiles:/opt/drupal/web/sites/default/files
     environment:
       - DRUPAL_DATABASE_NAME
@@ -102,5 +103,6 @@ networks:
 volumes:
   ravendata:
   drupalfiles:
+  drupalexport:
   pgdata:
   static:

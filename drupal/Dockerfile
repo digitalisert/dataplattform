@@ -6,8 +6,10 @@ RUN apt-get update -y \
 
 RUN composer require \
     'drupal/admin_toolbar:^3.0' \
+    'drupal/external_entities:^2.0@alpha' \
     'drupal/gin:^3.0-alpha37@alpha' \
     'drupal/gin_toolbar:1.0-beta20' \
+    'drupal/paragraphs:^1.12' \
     'drush/drush'
 
 RUN cp web/sites/default/default.settings.php web/sites/default/settings.php && \

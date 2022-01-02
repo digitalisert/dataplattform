@@ -1,0 +1,36 @@
+langcode: en
+status: true
+dependencies: {  }
+id: resource
+label: Resource
+label_plural: Resources
+description: ''
+read_only: true
+field_mappings:
+  id:
+    value: id
+  uuid:
+    value: uuid
+  title:
+    value: title
+storage_client_id: rest
+storage_client_config:
+  endpoint: 'http://studio/Studio/api/Search/search'
+  response_format: json
+  pager:
+    default_limit: '50'
+    page_parameter: ''
+    page_parameter_type: null
+    page_size_parameter: ''
+    page_size_parameter_type: null
+  api_key:
+    header_name: ''
+    key: ''
+  parameters:
+    list: {  }
+    single: {  }
+persistent_cache_max_age: 0
+annotation_entity_type_id: null
+annotation_bundle_id: null
+annotation_field_name: null
+inherits_annotation_fields: false

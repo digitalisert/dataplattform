@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.property.name
+    - paragraphs.paragraphs_type.property
+id: paragraph.property.default
+targetEntityType: paragraph
+bundle: property
+mode: default
+content:
+  name:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden: {  }

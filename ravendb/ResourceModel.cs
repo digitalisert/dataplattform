@@ -53,6 +53,9 @@ namespace Digitalisert.Dataplattform
         public class ResourceDerivedProperty : ResourceProperty { }
         public class ResourceDerivedPropertyReferences : ResourcePropertyReferences { }
         public class ResourceMapped : Resource { }
+        public class DataplattformResource : ResourceMapped { }
         public class OntologyResource : ResourceMapped { }
+        public class N50KartdataResource : ResourceMapped { }
+        public class SSBResource : ResourceMapped { }
     }
 }

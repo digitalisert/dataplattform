@@ -1,6 +1,13 @@
-FROM drupal:9.1.10-apache
+FROM drupal:9.3.0-apache
+
+RUN apt-get update -y \
+    && apt-get install -y --no-install-recommends git unzip \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN composer require \
+    'drupal/admin_toolbar:^3.0' \
+    'drupal/gin:^3.0-alpha37@alpha' \
+    'drupal/gin_toolbar:1.0-beta20' \
     'drush/drush'
 
 RUN cp web/sites/default/default.settings.php web/sites/default/settings.php && \
@@ -9,3 +16,18 @@ RUN cp web/sites/default/default.settings.php web/sites/default/settings.php && 
     chown -R www-data:www-data web/sites && \
     mkdir -p config/sync && \
     chmod 777 config/sync
+
+COPY \
+    dataplattform-entrypoint.sh \
+    post-start-drupal.sh \
+    /usr/local/bin/
+
+RUN chmod +x \
+    /usr/local/bin/dataplattform-entrypoint.sh \
+    /usr/local/bin/post-start-drupal.sh
+
+ENTRYPOINT ["/usr/local/bin/dataplattform-entrypoint.sh"]
+
+CMD ["apache2-foreground"]
+
+USER www-data:www-data

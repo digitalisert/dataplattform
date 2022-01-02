@@ -102,6 +102,15 @@ services:
       - POSTGRES_PASSWORD
     restart: always
 
+  ofelia:
+    image: mcuadros/ofelia:latest
+    depends_on:
+      - drupal
+      - etl
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./ofelia.ini:/etc/ofelia/config.ini
+
 networks:
   backend:
   etl:

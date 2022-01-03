@@ -17,9 +17,16 @@ source:
     1:
       name: name
       label: 'Name'
+    2:
+      name: value
+      label: 'Value'
 
 process:
   name: name
+  value:
+    plugin: explode
+    source: value
+    delimiter: ';'
 
 destination:
   plugin: entity_reference_revisions:paragraph

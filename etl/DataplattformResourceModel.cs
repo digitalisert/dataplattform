@@ -46,7 +46,8 @@ namespace etl
                             let paragraph = LoadDocument<Drupal>("Dataplattform/Drupal/Paragraph/" + property["target_id"], "Dataplattform")
                             from name in paragraph["name"]
                             select new Property {
-                                Name = name["value"].ToString()
+                                Name = name["value"].ToString(),
+                                Value = paragraph["value"].Select(v => v["value"].ToString())
                             },
                         Source = new[] { metadata.Value<string>("@id") },
                         Modified = DateTime.MinValue

@@ -18,16 +18,23 @@ source:
       name: name
       label: 'Name'
     2:
+      name: type
+      label: 'Type'
+    3:
       name: value
       label: 'Value'
 
 process:
   name: name
+  type: type
   value:
+    plugin: explode
+    source: value
+    delimiter: ';'
+  value_geofield:
     plugin: explode
     source: value
     delimiter: ';'
 
 destination:
   plugin: entity_reference_revisions:paragraph
-  default_bundle: property

@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.value_geofield
+    - paragraphs.paragraphs_type.property_geofield
+  module:
+    - geofield
+id: paragraph.property_geofield.value_geofield
+field_name: value_geofield
+entity_type: paragraph
+bundle: property_geofield
+label: Value
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: geofield

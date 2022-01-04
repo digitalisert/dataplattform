@@ -47,7 +47,12 @@ namespace etl
                             from name in paragraph["name"]
                             select new Property {
                                 Name = name["value"].ToString(),
-                                Value = paragraph["value"].Select(v => v["value"].ToString())
+                                Value = (
+                                    paragraph["value"].Select(v => v["value"].ToString())
+                                ).Union(
+                                    paragraph["value_geofield"].Select(v => v["value"].ToString())
+                                ),
+                                Tags = paragraph["value_geofield"].Take(1).Select(t => "@wkt")
                             },
                         Source = new[] { metadata.Value<string>("@id") },
                         Modified = DateTime.MinValue

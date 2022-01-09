@@ -2,18 +2,18 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.paragraph.property.name
-    - field.field.paragraph.property.resources
-    - field.field.paragraph.property.value
-    - paragraphs.paragraphs_type.property
+    - field.field.paragraph.resource.context
+    - field.field.paragraph.resource.properties
+    - field.field.paragraph.resource.resourcetype
+    - paragraphs.paragraphs_type.resource
   module:
     - paragraphs
-id: paragraph.property.default
+id: paragraph.resource.default
 targetEntityType: paragraph
-bundle: property
+bundle: resource
 mode: default
 content:
-  name:
+  context:
     type: string_textfield
     weight: 0
     region: content
@@ -21,7 +21,7 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  resources:
+  properties:
     type: entity_reference_paragraphs
     weight: 2
     region: content
@@ -31,9 +31,9 @@ content:
       edit_mode: preview
       add_mode: dropdown
       form_display_mode: default
-      default_paragraph_type: _none
+      default_paragraph_type: property_name
     third_party_settings: {  }
-  value:
+  resourcetype:
     type: string_textfield
     weight: 1
     region: content

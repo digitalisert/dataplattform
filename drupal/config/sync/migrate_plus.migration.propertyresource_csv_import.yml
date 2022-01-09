@@ -1,0 +1,50 @@
+id: propertyresource_csv_import
+label: Import property resources
+migration_group: default
+
+source:
+  plugin: csv
+  path: /opt/drupal/config/sync/data/propertyresources.csv
+  delimiter: ','
+  enclosure: '"'
+  header_offset: 0
+  ids:
+    - id
+  fields:
+    0:
+      name: id
+      label: 'Unique Id'
+    1:
+      name: context
+      label: 'Context'
+    2:
+      name: type
+      label: 'Type'
+    3:
+      name: properties
+      label: 'Properties'
+
+process:
+  context: context
+  resourcetype: type
+  properties:
+    -
+      plugin: explode
+      source: properties
+      delimiter: ';'
+    -
+      plugin: migration_lookup
+      migration: property_csv_import
+      no_stub: true
+    -
+      plugin: skip_on_empty
+      method: process
+    -
+      plugin: sub_process
+      process:
+        target_id: '0'
+        target_revision_id: '1'
+
+destination:
+  plugin: entity_reference_revisions:paragraph
+  default_bundle: resource

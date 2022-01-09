@@ -2,18 +2,18 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.paragraph.property.name
-    - field.field.paragraph.property.resources
-    - field.field.paragraph.property.value
-    - paragraphs.paragraphs_type.property
+    - field.field.paragraph.resource.context
+    - field.field.paragraph.resource.properties
+    - field.field.paragraph.resource.resourcetype
+    - paragraphs.paragraphs_type.resource
   module:
     - entity_reference_revisions
-id: paragraph.property.default
+id: paragraph.resource.default
 targetEntityType: paragraph
-bundle: property
+bundle: resource
 mode: default
 content:
-  name:
+  context:
     type: string
     label: above
     settings:
@@ -21,7 +21,7 @@ content:
     third_party_settings: {  }
     weight: 0
     region: content
-  resources:
+  properties:
     type: entity_reference_revisions_entity_view
     label: above
     settings:
@@ -30,7 +30,7 @@ content:
     third_party_settings: {  }
     weight: 2
     region: content
-  value:
+  resourcetype:
     type: string
     label: above
     settings:

@@ -52,7 +52,23 @@ namespace etl
                                 ).Union(
                                     paragraph["value_geofield"].Select(v => v["value"].ToString())
                                 ),
-                                Tags = paragraph["value_geofield"].Take(1).Select(t => "@wkt")
+                                Tags = paragraph["value_geofield"].Take(1).Select(t => "@wkt"),
+                                Resources =
+                                    from propertyresource in paragraph["resources"]
+                                    let resourceparagraph = LoadDocument<Drupal>("Dataplattform/Drupal/Paragraph/" + propertyresource["target_id"], "Dataplattform")
+                                    from context in resourceparagraph["context"]
+                                    select new Resource
+                                    {
+                                        Context = context["value"].ToString(),
+                                        Type = resourceparagraph["resourcetype"].Select(t => t["value"].ToString()),
+                                        Properties =
+                                            from resourceproperty in resourceparagraph["properties"]
+                                            let resourcepropertyparagraph = LoadDocument<Drupal>("Dataplattform/Drupal/Paragraph/" + resourceproperty["target_id"], "Dataplattform")
+                                            from resourcepropertyname in resourcepropertyparagraph["name"]
+                                            select new Property {
+                                                Name = resourcepropertyname["value"].ToString()
+                                            }
+                                    }
                             },
                         Source = new[] { metadata.Value<string>("@id") },
                         Modified = DateTime.MinValue

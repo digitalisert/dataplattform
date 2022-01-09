@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.context
+    - paragraphs.paragraphs_type.resource
+id: paragraph.resource.context
+field_name: context
+entity_type: paragraph
+bundle: resource
+label: Context
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

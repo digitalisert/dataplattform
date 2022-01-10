@@ -15,8 +15,8 @@ namespace Digitalisert.Dataplattform
                 from resource in resources
                 from ontology in
                     from type in resource.Type
-                    from ontologyreference in LoadDocument<ResourceMappingReferences>("ResourceMappingReferences/" + resource.Context + "/" + type).ReduceOutputs
-                    select LoadDocument<ResourceMapping>(ontologyreference)
+                    from ontologyreference in LoadDocument<ResourceOntologyReferences>("ResourceOntologyReferences/" + resource.Context + "/" + type).ReduceOutputs
+                    select LoadDocument<ResourceOntology>(ontologyreference)
                 where !ontology.Tags.Contains("@fetch") || LoadDocument<ResourceOntologyReferences>("ResourceOntologyReferences/" + resource.Context + "/" + resource.ResourceId) != null
                 select new Resource {
                     Context = resource.Context,
@@ -85,8 +85,8 @@ namespace Digitalisert.Dataplattform
                                 )
                                 from propertyresource in
                                     from resourcemapping in LoadDocument<ResourceMapping>(source)
-                                    let propertyresourceontologyreference = LoadDocument<ResourceMappingReferences>(resourcemapping.Type.Select(type => "ResourceMappingReferences/" + resourcemapping.Context + "/" + type))
-                                    let propertyresourceontology = LoadDocument<ResourceMapping>(propertyresourceontologyreference.SelectMany(r => r.ReduceOutputs))
+                                    let propertyresourceontologyreference = LoadDocument<ResourceOntologyReferences>(resourcemapping.Type.Select(type => "ResourceOntologyReferences/" + resourcemapping.Context + "/" + type))
+                                    let propertyresourceontology = LoadDocument<ResourceOntology>(propertyresourceontologyreference.SelectMany(r => r.ReduceOutputs))
 
                                     select new Resource {
                                         Context = resourcemapping.Context,

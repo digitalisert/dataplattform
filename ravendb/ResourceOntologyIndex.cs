@@ -13,6 +13,53 @@ namespace Digitalisert.Dataplattform
         {
             AddMap<ResourceMapping>(resources =>
                 from resource in resources
+                where resource.Type == null || !resource.Type.Any()
+                select new Resource
+                {
+                    Context = resource.Context,
+                    ResourceId = resource.ResourceId,
+                    Tags = resource.Tags,
+                    Properties = resource.Properties,
+                    Source = resource.Source,
+                    Modified = MetadataFor(resource).Value<DateTime>("@last-modified")
+                }
+            );
+
+            AddMap<ResourceMapping>(resources =>
+                from resource in resources
+                where resource.Type == null || !resource.Type.Any()
+                from property in resource.Properties
+                from propertyresource in property.Resources
+                from propertyresourcetype in propertyresource.Type
+                from inverseproperty in propertyresource.Properties
+                select new Resource
+                {
+                    Context = propertyresource.Context,
+                    ResourceId = propertyresourcetype,
+                    Tags = new string[] { },
+                    Properties = new[] {
+                        new Property {
+                            Name = inverseproperty.Name,
+                            Properties = new[] {
+                                new Property {
+                                    Name = property.Name,
+                                    Resources = new[] {
+                                        new Resource {
+                                            Context = resource.Context,
+                                            Type = new[] { resource.ResourceId }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    Source = resource.Source,
+                    Modified = MetadataFor(resource).Value<DateTime>("@last-modified")
+                }
+            );
+
+            AddMap<ResourceMapping>(resources =>
+                from resource in resources
                 from type in resource.Type
                 from ontologyreference in LoadDocument<ResourceMappingReferences>("ResourceMappingReferences/" + resource.Context + "/" + type).ReduceOutputs
                 let ontology = LoadDocument<ResourceMapping>(ontologyreference)
@@ -135,7 +182,15 @@ namespace Digitalisert.Dataplattform
                     Context = g.Key.Context,
                     ResourceId = g.Key.ResourceId,
                     Tags = g.SelectMany(resource => resource.Tags).Distinct(),
-                    Properties = g.SelectMany(resource => resource.Properties).Distinct(),
+                    Properties =
+                        from property in g.SelectMany(r => r.Properties)
+                        group property by property.Name into propertyG
+                        select new Property {
+                            Name = propertyG.Key,
+                            Resources = propertyG.SelectMany(p => p.Resources).Distinct(),
+                            Properties = propertyG.SelectMany(p => p.Properties).Distinct(),
+                            Source = propertyG.SelectMany(p => p.Source).Distinct()
+                        },
                     Source = g.SelectMany(resource => resource.Source).Distinct(),
                     Modified = g.Select(resource => resource.Modified).Max()
                 };

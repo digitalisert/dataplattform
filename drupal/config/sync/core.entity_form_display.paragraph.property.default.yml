@@ -2,17 +2,28 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.property.from
     - field.field.paragraph.property.name
+    - field.field.paragraph.property.properties
     - field.field.paragraph.property.resources
+    - field.field.paragraph.property.tags
+    - field.field.paragraph.property.thru
     - field.field.paragraph.property.value
     - paragraphs.paragraphs_type.property
   module:
+    - datetime
     - paragraphs
 id: paragraph.property.default
 targetEntityType: paragraph
 bundle: property
 mode: default
 content:
+  from:
+    type: datetime_default
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   name:
     type: string_textfield
     weight: 0
@@ -21,9 +32,21 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  properties:
+    type: entity_reference_paragraphs
+    weight: 4
+    region: content
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
   resources:
     type: entity_reference_paragraphs
-    weight: 2
+    weight: 3
     region: content
     settings:
       title: Paragraph
@@ -32,6 +55,20 @@ content:
       add_mode: dropdown
       form_display_mode: default
       default_paragraph_type: _none
+    third_party_settings: {  }
+  tags:
+    type: string_textfield
+    weight: 2
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  thru:
+    type: datetime_default
+    weight: 6
+    region: content
+    settings: {  }
     third_party_settings: {  }
   value:
     type: string_textfield

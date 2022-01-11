@@ -52,7 +52,11 @@ namespace etl
                                 ).Union(
                                     paragraph["value_geofield"].Select(v => v["value"].ToString())
                                 ),
-                                Tags = paragraph["value_geofield"].Take(1).Select(t => "@wkt"),
+                                Tags = (
+                                    paragraph["tags"].Select(v => v["value"].ToString())
+                                ).Union(
+                                    paragraph["value_geofield"].Take(1).Select(t => "@wkt")
+                                ),
                                 Resources =
                                     from propertyresource in paragraph["resources"]
                                     let resourceparagraph = LoadDocument<Drupal>("Dataplattform/Drupal/Paragraph/" + propertyresource["target_id"], "Dataplattform")
@@ -66,9 +70,20 @@ namespace etl
                                             let resourcepropertyparagraph = LoadDocument<Drupal>("Dataplattform/Drupal/Paragraph/" + resourceproperty["target_id"], "Dataplattform")
                                             from resourcepropertyname in resourcepropertyparagraph["name"]
                                             select new Property {
-                                                Name = resourcepropertyname["value"].ToString()
+                                                Name = resourcepropertyname["value"].ToString(),
+                                                Value = resourcepropertyparagraph["value"].Select(v => v["value"].ToString())
                                             }
-                                    }
+                                    },
+                                Properties =
+                                    from propertyproperty in paragraph["properties"]
+                                    let propertypropertyparagraph = LoadDocument<Drupal>("Dataplattform/Drupal/Paragraph/" + propertyproperty["target_id"], "Dataplattform")
+                                    from propertypropertyname in propertypropertyparagraph["name"]
+                                    select new Property {
+                                        Name = propertypropertyname["value"].ToString(),
+                                        Tags = propertypropertyparagraph["tags"].Select(v => v["value"].ToString())
+                                    },
+                                From = (paragraph["from"] != null && paragraph["from"].Any()) ? paragraph["from"].Select(v => DateTime.Parse(v["value"].ToString())).First() : null,
+                                Thru = (paragraph["thru"] != null && paragraph["thru"].Any()) ? paragraph["from"].Select(v => DateTime.Parse(v["value"].ToString())).First() : null
                             },
                         Source = new[] { metadata.Value<string>("@id") },
                         Modified = DateTime.MinValue

@@ -2,17 +2,31 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.property.from
     - field.field.paragraph.property.name
+    - field.field.paragraph.property.properties
     - field.field.paragraph.property.resources
+    - field.field.paragraph.property.tags
+    - field.field.paragraph.property.thru
     - field.field.paragraph.property.value
     - paragraphs.paragraphs_type.property
   module:
+    - datetime
     - entity_reference_revisions
 id: paragraph.property.default
 targetEntityType: paragraph
 bundle: property
 mode: default
 content:
+  from:
+    type: datetime_default
+    label: above
+    settings:
+      timezone_override: ''
+      format_type: medium
+    third_party_settings: {  }
+    weight: 5
+    region: content
   name:
     type: string
     label: above
@@ -21,6 +35,15 @@ content:
     third_party_settings: {  }
     weight: 0
     region: content
+  properties:
+    type: entity_reference_revisions_entity_view
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 4
+    region: content
   resources:
     type: entity_reference_revisions_entity_view
     label: above
@@ -28,7 +51,24 @@ content:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 3
+    region: content
+  tags:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
     weight: 2
+    region: content
+  thru:
+    type: datetime_default
+    label: above
+    settings:
+      timezone_override: ''
+      format_type: medium
+    third_party_settings: {  }
+    weight: 6
     region: content
   value:
     type: string

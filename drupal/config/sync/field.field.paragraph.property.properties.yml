@@ -1,0 +1,35 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.properties
+    - paragraphs.paragraphs_type.property
+  module:
+    - entity_reference_revisions
+id: paragraph.property.properties
+field_name: properties
+entity_type: paragraph
+bundle: property
+label: Properties
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      property: property
+    negate: 0
+    target_bundles_drag_drop:
+      property:
+        weight: 4
+        enabled: true
+      property_geofield:
+        weight: 5
+        enabled: false
+      resource:
+        weight: 6
+        enabled: false
+field_type: entity_reference_revisions

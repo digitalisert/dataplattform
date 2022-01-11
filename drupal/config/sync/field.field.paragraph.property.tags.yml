@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.tags
+    - paragraphs.paragraphs_type.property
+id: paragraph.property.tags
+field_name: tags
+entity_type: paragraph
+bundle: property
+label: Tags
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

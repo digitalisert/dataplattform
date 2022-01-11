@@ -187,6 +187,8 @@ namespace Digitalisert.Dataplattform
                         group property by property.Name into propertyG
                         select new Property {
                             Name = propertyG.Key,
+                            Value = propertyG.SelectMany(p => p.Value).Distinct(),
+                            Tags = propertyG.SelectMany(p => p.Tags).Distinct(),
                             Resources = propertyG.SelectMany(p => p.Resources).Distinct(),
                             Properties = propertyG.SelectMany(p => p.Properties).Distinct(),
                             Source = propertyG.SelectMany(p => p.Source).Distinct()

@@ -24,8 +24,20 @@ source:
       name: value
       label: 'Value'
     4:
+      name: tags
+      label: 'Tags'
+    5:
       name: propertyresources
       label: 'Resources'
+    6:
+      name: properties
+      label: 'Properties'
+    7:
+      name: from
+      label: 'From'
+    8:
+      name: thru
+      label: 'Thru'
 
 process:
   name: name
@@ -37,6 +49,10 @@ process:
   value_geofield:
     plugin: explode
     source: value
+    delimiter: ';'
+  tags:
+    plugin: explode
+    source: tags
     delimiter: ';'
   resources:
     -
@@ -51,6 +67,33 @@ process:
       process:
         target_id: '0'
         target_revision_id: '1'
+  properties:
+    -
+      plugin: explode
+      source: properties
+      delimiter: ';'
+    -
+      plugin: migration_lookup
+      migration: property_csv_import
+      no_stub: true
+    -
+      plugin: skip_on_empty
+      method: process
+    -
+      plugin: sub_process
+      process:
+        target_id: '0'
+        target_revision_id: '1'
+  from:
+    plugin: format_date
+    source: from
+    from_format: 'Y-m-d\TH:i:s'
+    to_format: 'Y-m-d\TH:i:s'
+  thru:
+    plugin: format_date
+    source: thru
+    from_format: 'Y-m-d\TH:i:s'
+    to_format: 'Y-m-d\TH:i:s'
 
 destination:
   plugin: entity_reference_revisions:paragraph

@@ -56,6 +56,8 @@ namespace etl
                                     paragraph["tags"].Select(v => v["value"].ToString())
                                 ).Union(
                                     paragraph["value_geofield"].Take(1).Select(t => "@wkt")
+                                ).Union(
+                                    paragraph["type"].Where(t => t["target_id"].ToString() == "property_query").Take(1).Select(t => "@query")
                                 ),
                                 Resources =
                                     from propertyresource in paragraph["resources"]

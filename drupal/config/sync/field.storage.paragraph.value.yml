@@ -6,11 +6,9 @@ dependencies:
 id: paragraph.value
 field_name: value
 entity_type: paragraph
-type: string
+type: string_long
 settings:
-  max_length: 255
   case_sensitive: false
-  is_ascii: false
 module: core
 locked: false
 cardinality: -1

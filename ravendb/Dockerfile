@@ -7,7 +7,7 @@ RUN dotnet restore
 COPY *.cs ./
 RUN dotnet publish -c Release -o out -r linux-x64 --self-contained
 
-FROM ravendb/ravendb:5.2.4-ubuntu.20.04-x64
+FROM ravendb/ravendb:5.3.1-ubuntu.20.04-x64
 
 COPY --from=resourcemodel \
     /app/out/Digitalisert.Dataplattform.ResourceModel \

@@ -21,8 +21,8 @@ services:
       - RAVEN_ARGS=--log-to-console
       - RAVEN_Setup_Mode=None
       - RAVEN_License_Eula_Accepted=True
-      - RAVEN_ServerUrl=http://0.0.0.0:8080
-      - RAVEN_Security_UnsecuredAccessAllowed=PublicNetwork
+      - RAVEN_ServerUrl=http://ravendb:8080
+      - RAVEN_Security_UnsecuredAccessAllowed=PrivateNetwork
       - RAVEN_DataDir=RavenData
       - RAVEN_License_Path=/opt/settings/license.json
       - RAVEN_Features_Availability=Experimental
@@ -58,7 +58,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT
     depends_on:
-      - init
       - static
     restart: always
 

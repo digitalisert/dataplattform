@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Queries;
 using Raven.Client.Documents.Queries.Facets;
 using Raven.Client.Documents.Queries.Highlighting;
 using Digitalisert.Dataplattform.Studio.Models;
+using static Digitalisert.Dataplattform.Studio.Models.ResourceModel;
 
 namespace Digitalisert.Dataplattform.Studio.Controllers
 {
@@ -84,6 +86,25 @@ namespace Digitalisert.Dataplattform.Studio.Controllers
 
                 return View((resources.Any()) ? result : resource);
             }
+        }
+
+        [Route("Studio/ResourcePropertyAttribute/{name}/{context}/{*id}")]
+        public dynamic Query(string name, string context, string id)
+        {
+            using(var session = _store.OpenSession())
+            {
+                var resourcepropertyreferences = session.Load<ResourcePropertyAttributeReferences>("ResourcePropertyAttributeReferences/" + context + "/" + id + "/" + name);
+                foreach(var resourceproperty in session.Load<ResourcePropertyAttribute>(resourcepropertyreferences.ReduceOutputs))
+                {
+                    if (!String.IsNullOrEmpty(resourceproperty.Value.Query))
+                    {
+                        var request = WebRequest.Create("http://ravendb:8080/databases/Digitalisert/streams/queries?format=csv&fromDocument=" + resourceproperty.Key);
+                        return request.GetResponse().GetResponseStream();
+                    }
+                }
+            }
+
+            return Ok();
         }
 
         public IActionResult Error()

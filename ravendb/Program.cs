@@ -29,6 +29,7 @@ namespace Digitalisert.Dataplattform
                 new ResourceClusterIndex().Execute(store);
                 new ResourceDerivedPropertyIndex().Execute(store);
                 new ResourceReasonerIndex().Execute(store);
+                new ResourcePropertyAttributeIndex().Execute(store);
                 new ResourceIndex().Execute(store);
             }
         }

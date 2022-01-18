@@ -86,6 +86,10 @@
                       </p>
                   }
               }
+              @if (property.Tags.Contains("@query"))
+              {
+                  <a href="/Studio/ResourcePropertyAttribute/@property.Name/@Model.Context/@Model.ResourceId">CSV</a>
+              }
               @if (property.Resources != null && property.Resources.Any())
               {
                   <partial name="~/Views/Shared/_List.cshtml" model="property.Resources"/>

@@ -44,6 +44,7 @@ namespace etl
                         Properties =
                             from property in node["properties"]
                             let paragraph = LoadDocument<Drupal>("Dataplattform/Drupal/Paragraph/" + property["target_id"], "Dataplattform")
+                            let paragraphmetadata = MetadataFor(paragraph)
                             from name in paragraph["name"]
                             select new Property {
                                 Name = name["value"].ToString(),
@@ -62,6 +63,7 @@ namespace etl
                                 Resources =
                                     from propertyresource in paragraph["resources"]
                                     let resourceparagraph = LoadDocument<Drupal>("Dataplattform/Drupal/Paragraph/" + propertyresource["target_id"], "Dataplattform")
+                                    let resourceparagraphmetadata = MetadataFor(resourceparagraph)
                                     from context in resourceparagraph["context"]
                                     select new Resource
                                     {
@@ -70,22 +72,28 @@ namespace etl
                                         Properties =
                                             from resourceproperty in resourceparagraph["properties"]
                                             let resourcepropertyparagraph = LoadDocument<Drupal>("Dataplattform/Drupal/Paragraph/" + resourceproperty["target_id"], "Dataplattform")
+                                            let resourcepropertyparagraphmetadata = MetadataFor(resourcepropertyparagraph)
                                             from resourcepropertyname in resourcepropertyparagraph["name"]
                                             select new Property {
                                                 Name = resourcepropertyname["value"].ToString(),
-                                                Value = resourcepropertyparagraph["value"].Select(v => v["value"].ToString())
-                                            }
+                                                Value = resourcepropertyparagraph["value"].Select(v => v["value"].ToString()),
+                                                Source = new[] { resourcepropertyparagraphmetadata.Value<string>("@id") }
+                                            },
+                                        Source = new[] { resourceparagraphmetadata.Value<string>("@id") }
                                     },
                                 Properties =
                                     from propertyproperty in paragraph["properties"]
                                     let propertypropertyparagraph = LoadDocument<Drupal>("Dataplattform/Drupal/Paragraph/" + propertyproperty["target_id"], "Dataplattform")
+                                    let propertypropertyparagraphmetadata = MetadataFor(propertypropertyparagraph)
                                     from propertypropertyname in propertypropertyparagraph["name"]
                                     select new Property {
                                         Name = propertypropertyname["value"].ToString(),
-                                        Tags = propertypropertyparagraph["tags"].Select(v => v["value"].ToString())
+                                        Tags = propertypropertyparagraph["tags"].Select(v => v["value"].ToString()),
+                                        Source = new[] { propertypropertyparagraphmetadata.Value<string>("@id") }
                                     },
                                 From = (paragraph["from"] != null && paragraph["from"].Any()) ? paragraph["from"].Select(v => DateTime.Parse(v["value"].ToString())).First() : null,
-                                Thru = (paragraph["thru"] != null && paragraph["thru"].Any()) ? paragraph["from"].Select(v => DateTime.Parse(v["value"].ToString())).First() : null
+                                Thru = (paragraph["thru"] != null && paragraph["thru"].Any()) ? paragraph["thru"].Select(v => DateTime.Parse(v["value"].ToString())).First() : null,
+                                Source = new[] { paragraphmetadata.Value<string>("@id") }
                             },
                         Source = new[] { metadata.Value<string>("@id") },
                         Modified = DateTime.MinValue

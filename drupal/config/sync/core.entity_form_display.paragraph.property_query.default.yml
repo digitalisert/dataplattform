@@ -1,0 +1,31 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.property_query.name
+    - field.field.paragraph.property_query.value
+    - paragraphs.paragraphs_type.property_query
+id: paragraph.property_query.default
+targetEntityType: paragraph
+bundle: property_query
+mode: default
+content:
+  name:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  value:
+    type: string_textarea
+    weight: 1
+    region: content
+    settings:
+      rows: 10
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

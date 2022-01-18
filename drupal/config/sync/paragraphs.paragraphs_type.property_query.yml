@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies: {  }
+id: property_query
+label: 'Property query'
+icon_uuid: null
+icon_default: null
+description: ''
+behavior_plugins: {  }

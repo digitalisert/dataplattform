@@ -48,6 +48,18 @@ namespace Digitalisert.Dataplattform.Studio.Models
             public string[] ReduceOutputs { get; set; }
         }
 
+        public class ResourceProperty : Resource {
+            public string Name { get; set; }
+        }
+
+        public class ResourcePropertyReferences : ResourceReferences { }
+
+        public class ResourcePropertyAttribute : ResourceProperty {
+            public string Query { get; set; }
+        }
+
+        public class ResourcePropertyAttributeReferences : ResourcePropertyReferences { }
+
         public class ResourceIndex : AbstractMultiMapIndexCreationTask<Resource> { }
 
         public static List<Facet> Facets = new List<Facet>

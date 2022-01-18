@@ -52,9 +52,15 @@ namespace Digitalisert.Dataplattform
         public class ResourceOntologyReferences : ResourcePropertyReferences { }
         public class ResourceDerivedProperty : ResourceProperty { }
         public class ResourceDerivedPropertyReferences : ResourcePropertyReferences { }
+
+        public class ResourcePropertyAttribute : ResourceProperty {
+            public string Query { get; set; }
+        }
+
+        public class ResourcePropertyAttributeReferences : ResourcePropertyReferences { }
+
         public class ResourceMapped : Resource { }
         public class DataplattformResource : ResourceMapped { }
-        public class OntologyResource : ResourceMapped { }
         public class N50KartdataResource : ResourceMapped { }
         public class SSBResource : ResourceMapped { }
     }

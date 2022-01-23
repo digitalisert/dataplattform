@@ -21,23 +21,23 @@ source:
       name: type
       label: 'Type'
     3:
-      name: value
-      label: 'Value'
-    4:
-      name: tags
-      label: 'Tags'
-    5:
       name: propertyresources
       label: 'Resources'
-    6:
+    4:
       name: properties
       label: 'Properties'
-    7:
+    5:
       name: from
       label: 'From'
-    8:
+    6:
       name: thru
       label: 'Thru'
+    7:
+      name: tags
+      label: 'Tags'
+    8:
+      name: value
+      label: 'Value'
 
 process:
   name: name

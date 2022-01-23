@@ -27,11 +27,11 @@ source:
       name: type
       label: 'Type'
     6:
-      name: body
-      label: 'Post body'
-    7:
       name: properties
       label: 'Properties'
+    7:
+      name: body
+      label: 'Post body'
 
 process:
   title: title

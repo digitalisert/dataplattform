@@ -342,8 +342,9 @@ namespace Digitalisert.Dataplattform
         public static string WKTProjectToWGS84(string wkt, int fromsrid)
         {
             var geometry = new WKTReader().Read(wkt);
+            int fromutmzone = (fromsrid != 0) ? fromsrid : 33;
 
-            return Transform(geometry, ProjectedCoordinateSystem.WGS84_UTM(33, true), GeographicCoordinateSystem.WGS84).ToString();
+            return Transform(geometry, ProjectedCoordinateSystem.WGS84_UTM(fromutmzone, true), GeographicCoordinateSystem.WGS84).ToString();
         }
 
         private static Geometry Transform(this Geometry geometry, CoordinateSystem from, CoordinateSystem to)

@@ -15,6 +15,7 @@ RUN composer require \
     'drupal/migrate_source_csv:^3.4' \
     'drupal/migrate_tools:5.x-dev@dev' \
     'drupal/paragraphs:^1.12' \
+    'drupal/webform:^6.1' \
     'drush/drush'
 
 RUN cp web/sites/default/default.settings.php web/sites/default/settings.php && \

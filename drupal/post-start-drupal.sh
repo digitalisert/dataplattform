@@ -2,7 +2,7 @@
 
 echo "Post startup"
 
-until [ $(curl -fLSs http://127.0.0.1 -o /dev/null -w '%{http_code}\n') -eq "200" ] ; do sleep 5; done;
+until [ $(curl -fLSs http://drupal -o /dev/null -w '%{http_code}\n') -eq "200" ] ; do sleep 5; done;
 
 BOOTSTRAP=$(drush core:status --format=string bootstrap)
 

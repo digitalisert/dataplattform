@@ -27,7 +27,7 @@ content:
     region: content
   context:
     type: string
-    label: above
+    label: inline
     settings:
       link_to_entity: false
     third_party_settings: {  }
@@ -49,7 +49,7 @@ content:
     region: content
   resource:
     type: entity_reference_label
-    label: above
+    label: inline
     settings:
       link: true
     third_party_settings: {  }
@@ -57,7 +57,7 @@ content:
     region: content
   resourceid:
     type: string
-    label: above
+    label: inline
     settings:
       link_to_entity: false
     third_party_settings: {  }
@@ -65,7 +65,7 @@ content:
     region: content
   resourcetype:
     type: string
-    label: above
+    label: inline
     settings:
       link_to_entity: false
     third_party_settings: {  }

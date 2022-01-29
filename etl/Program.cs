@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using Newtonsoft.Json.Linq;
 using Raven.Client.Documents;
 using Raven.Client.Documents.BulkInsert;
@@ -55,6 +56,33 @@ namespace etl
                                     { "@expires", DateTime.UtcNow.AddSeconds(60) }
                                 })
                             );
+                        }
+                    }
+                }
+
+                using (BulkInsertOperation bulkInsert = store.BulkInsert())
+                {
+                    foreach(var fileInfo in new DirectoryInfo("export").GetFiles("webform-*.zip"))
+                    {
+                        using (ZipArchive archive = ZipFile.OpenRead(fileInfo.FullName))
+                        {
+                            foreach (ZipArchiveEntry entry in archive.Entries)
+                            {
+                                using (StreamReader streamreader = new StreamReader(entry.Open()))
+                                {
+                                    JObject webform = JObject.Parse(streamreader.ReadToEnd());
+
+                                    bulkInsert.Store(
+                                        webform,
+                                        "Dataplattform/Drupal/Webform/" + webform["serial"],
+                                        new MetadataAsDictionary(new Dictionary<string, object> {
+                                            { "@collection", "Dataplattform" },
+                                            { "@expires", DateTime.UtcNow.AddSeconds(60) }
+                                        })
+                                    );
+
+                                }
+                            }
                         }
                     }
                 }

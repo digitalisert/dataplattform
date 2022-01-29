@@ -1,11 +1,11 @@
-FROM drupal:9.3.0-apache
+FROM drupal:9.3.3-apache
 
 RUN apt-get update -y \
     && apt-get install -y --no-install-recommends git unzip \
     && rm -rf /var/lib/apt/lists/*
 
 RUN composer require \
-    'drupal/admin_toolbar:^3.0' \
+    'drupal/admin_toolbar:^3.1.0' \
     'drupal/external_entities:^2.0@alpha' \
     'drupal/gin:^3.0-alpha37@alpha' \
     'drupal/gin_toolbar:1.0-beta20' \

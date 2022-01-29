@@ -43,6 +43,7 @@ namespace Digitalisert.Dataplattform
                             Properties = new[] {
                                 new Property {
                                     Name = property.Name,
+                                    Tags = property.Tags,
                                     Resources = new[] {
                                         new Resource {
                                             Context = resource.Context,

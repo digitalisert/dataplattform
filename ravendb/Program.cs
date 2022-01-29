@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Newtonsoft.Json;
 using Raven.Client.Documents;
+using Raven.Client.Documents.Operations.Expiration;
 using Raven.Client.Json.Serialization.NewtonsoftJson;
 using Raven.Client.ServerWide;
 using Raven.Client.ServerWide.Operations;
@@ -21,6 +22,12 @@ namespace Digitalisert.Dataplattform
                 if (!store.Maintenance.Server.Send(new GetDatabaseNamesOperation(0, 25)).Contains(store.Database))
                 {
                     store.Maintenance.Server.Send(new CreateDatabaseOperation(new DatabaseRecord(store.Database)));
+
+                    store.Maintenance.Send(new ConfigureExpirationOperation(new ExpirationConfiguration
+                    {
+                                Disabled = false,
+                                DeleteFrequencyInSec = 60
+                    }));
                 }
 
                 new ResourceMappingIndex().Execute(store);

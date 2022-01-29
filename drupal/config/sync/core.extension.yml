@@ -17,6 +17,7 @@ module:
   geofield: 0
   gin_toolbar: 0
   leaflet: 0
+  leaflet_layers: 0
   migrate: 0
   migrate_plus: 0
   migrate_source_csv: 0

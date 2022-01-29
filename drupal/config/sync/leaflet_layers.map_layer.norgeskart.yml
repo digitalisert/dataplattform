@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies: {  }
+id: norgeskart
+label: Norgeskart
+description: ''
+settings:
+  urlTemplate: 'https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}'
+  attribution: Kartverket
+  layer_type: base
+  minZoom: '0'
+  maxZoom: '0'
+  subdomains: ''
+  errorTileUrl: ''
+  zoomOffset: '0'
+  tms: 0
+  zoomReverse: 0
+  detectRetina: 0

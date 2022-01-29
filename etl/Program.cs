@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json.Linq;
@@ -19,29 +19,43 @@ namespace etl
 
                 using (BulkInsertOperation bulkInsert = store.BulkInsert())
                 {
-                    JArray a = JArray.Parse(File.ReadAllText(@"export/resource.json"));
-
-                    foreach(var node in a)
+                    FileInfo resource = new FileInfo(@"export/resource.json");
+                    if (resource.Exists && resource.Length > 0)
                     {
-                        bulkInsert.Store(
-                            node,
-                            "Dataplattform/Drupal/Node/" + node["nid"][0]["value"],
-                            new MetadataAsDictionary(new Dictionary<string, object> { { "@collection", "Dataplattform"}})
-                        );
+                        JArray a = JArray.Parse(File.ReadAllText(resource.FullName));
+
+                        foreach(var node in a)
+                        {
+                            bulkInsert.Store(
+                                node,
+                                "Dataplattform/Drupal/Node/" + node["nid"][0]["value"],
+                                new MetadataAsDictionary(new Dictionary<string, object> {
+                                    { "@collection", "Dataplattform" },
+                                    { "@expires", DateTime.UtcNow.AddSeconds(60) }
+                                })
+                            );
+                        }
                     }
                 }
 
                 using (BulkInsertOperation bulkInsert = store.BulkInsert())
                 {
-                    JArray a = JArray.Parse(File.ReadAllText(@"export/property.json"));
-
-                    foreach(var paragraph in a)
+                    FileInfo property = new FileInfo(@"export/property.json");
+                    if (property.Exists && property.Length > 0)
                     {
-                        bulkInsert.Store(
-                            paragraph,
-                            "Dataplattform/Drupal/Paragraph/" + paragraph["id"][0]["value"],
-                            new MetadataAsDictionary(new Dictionary<string, object> { { "@collection", "Dataplattform"}})
-                        );
+                        JArray a = JArray.Parse(File.ReadAllText(@"export/property.json"));
+
+                        foreach(var paragraph in a)
+                        {
+                            bulkInsert.Store(
+                                paragraph,
+                                "Dataplattform/Drupal/Paragraph/" + paragraph["id"][0]["value"],
+                                new MetadataAsDictionary(new Dictionary<string, object> {
+                                    { "@collection", "Dataplattform" },
+                                    { "@expires", DateTime.UtcNow.AddSeconds(60) }
+                                })
+                            );
+                        }
                     }
                 }
 

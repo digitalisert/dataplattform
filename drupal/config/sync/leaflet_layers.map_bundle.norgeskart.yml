@@ -1,0 +1,26 @@
+langcode: en
+status: true
+dependencies: {  }
+id: norgeskart
+label: Norgeskart
+layers:
+  leaflet_layers_norgeskart:
+    enabled: true
+    weight: '-10'
+    id: leaflet_layers_norgeskart
+    label: ''
+    module: leaflet_layers
+    layer_id: norgeskart
+    map_bundle: leaflet_layers
+settings:
+  dragging: 1
+  touchZoom: 1
+  scrollWheelZoom: 1
+  doubleClickZoom: 1
+  zoomControl: 1
+  attributionControl: 1
+  trackResize: 1
+  fadeAnimation: 1
+  zoomAnimation: 1
+  closePopupOnClick: 1
+  layerControl: 1

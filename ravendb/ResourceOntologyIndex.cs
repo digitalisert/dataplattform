@@ -122,7 +122,27 @@ namespace Digitalisert.Dataplattform
                         Properties = new Property[] { },
                         Source = new[] { MetadataFor(resource).Value<String>("@id") }
                     }
-                ).Union(
+                )
+
+                select new Resource
+                {
+                    Context = ontologypropertyresource.Context,
+                    ResourceId = ontologypropertyresource.ResourceId,
+                    Tags = ontologypropertyresource.Tags,
+                    Properties = ontologypropertyresource.Properties,
+                    Source = ontologypropertyresource.Source,
+                    Modified = MetadataFor(resource).Value<DateTime>("@last-modified")
+                }
+            );
+
+            AddMap<ResourceMapping>(resources =>
+                from resource in resources
+                from type in resource.Type
+                from ontologyreference in LoadDocument<ResourceMappingReferences>("ResourceMappingReferences/" + resource.Context + "/" + type).ReduceOutputs
+                let ontology = LoadDocument<ResourceMapping>(ontologyreference)
+                where ontology != null
+
+                from ontologypropertyresource in (
                     from aliasValue in ontology.Properties.Where(p => p.Name == "@alias").SelectMany(p => p.Value)
                     from aliasFormattedValue in ResourceFormat(aliasValue, resource, null)
 

@@ -25,6 +25,7 @@ module:
   node: 0
   page_cache: 0
   paragraphs: 0
+  path: 0
   path_alias: 0
   rest: 0
   serialization: 0
@@ -36,6 +37,7 @@ module:
   views: 0
   views_ui: 0
   webform: 0
+  webform_node: 0
   webform_submission_export_import: 0
   webform_ui: 0
   minimal: 1000

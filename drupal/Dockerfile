@@ -1,7 +1,7 @@
 FROM drupal:9.3.3-apache
 
 RUN apt-get update -y \
-    && apt-get install -y --no-install-recommends git unzip \
+    && apt-get install -y --no-install-recommends git jq unzip \
     && rm -rf /var/lib/apt/lists/*
 
 RUN composer require \

@@ -18,7 +18,7 @@ namespace Digitalisert.Dataplattform
             {
                 var tags = propertyG.SelectMany(p => (IEnumerable<dynamic>)p.Tags).Distinct().Select(t => t.ToString());
 
-                if (tags.Intersect(new[] { "@sum", "@min", "@max", "@average" }).Any())
+                if (tags.Intersect(new[] { "@sum", "@min", "@max", "@average" }).Any() && !propertyG.SelectMany(p => (IEnumerable<dynamic>)p.Value).Any(v => v.StartsWith('{')))
                 {
                     var decimals = propertyG.SelectMany(p => (IEnumerable<dynamic>)p.Value).Where(v => decimal.TryParse(v.ToString(), out decimal _test)).Select(v => (decimal)decimal.Parse(v.ToString()));
                     if (tags.Contains("@sum")) {

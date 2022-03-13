@@ -27,9 +27,12 @@ source:
       name: type
       label: 'Type'
     6:
+      name: tags
+      label: 'Tags'
+    7:
       name: properties
       label: 'Properties'
-    7:
+    8:
       name: body
       label: 'Post body'
 
@@ -38,6 +41,7 @@ process:
   context: context
   resourceid: resourceid
   resourcetype: type
+  tags: tags
   body: body
   properties:
     -

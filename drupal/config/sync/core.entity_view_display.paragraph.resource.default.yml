@@ -5,6 +5,7 @@ dependencies:
     - field.field.paragraph.resource.context
     - field.field.paragraph.resource.properties
     - field.field.paragraph.resource.resourcetype
+    - field.field.paragraph.resource.tags
     - paragraphs.paragraphs_type.resource
   module:
     - entity_reference_revisions
@@ -28,7 +29,7 @@ content:
       view_mode: default
       link: ''
     third_party_settings: {  }
-    weight: 2
+    weight: 3
     region: content
   resourcetype:
     type: string
@@ -37,5 +38,13 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     weight: 1
+    region: content
+  tags:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 2
     region: content
 hidden: {  }

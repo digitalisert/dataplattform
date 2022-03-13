@@ -86,7 +86,8 @@ namespace Digitalisert.Dataplattform
                                 from propertyresource in
                                     from resourcemapping in LoadDocument<ResourceMapping>(source)
                                     let propertyresourceontologyreference = LoadDocument<ResourceOntologyReferences>(resourcemapping.Type.Select(type => "ResourceOntologyReferences/" + resourcemapping.Context + "/" + type))
-                                    let propertyresourceontology = LoadDocument<ResourceOntology>(propertyresourceontologyreference.SelectMany(r => r.ReduceOutputs))
+                                    let propertyresourceontologies = LoadDocument<ResourceOntology>(propertyresourceontologyreference.SelectMany(r => r.ReduceOutputs))
+                                    from propertyresourceontology in propertyresourceontologies
 
                                     select new Resource {
                                         Context = resourcemapping.Context,
@@ -99,16 +100,21 @@ namespace Digitalisert.Dataplattform
                                         Status = resourcemapping.Status,
                                         Tags = resourcemapping.Tags,
                                         Properties =
-                                            from resourcemappingontologyproperty in propertyresourceontology.SelectMany(r => r.Properties).Where(p => p.Name.StartsWith("@"))
+                                            from resourcemappingontologyproperty in propertyresourceontology.Properties.Where(p => p.Name.StartsWith("@"))
                                             let derivedproperties =
-                                                from derivedproperty in resourcemapping.Properties
-                                                where resourcemappingontologyproperty.Tags.Contains("@derive")
-                                                from ontologyderivedproperty in resourcemappingontologyproperty.Properties
-                                                where ontologyderivedproperty.Name == derivedproperty.Name
-                                                    && ontologyderivedproperty.Tags.All(t => derivedproperty.Tags.Contains(t))
-                                                    && (ontologyderivedproperty.From == null || ontologyderivedproperty.From <= (derivedproperty.Thru ?? DateTime.MaxValue))
-                                                    && (ontologyderivedproperty.Thru == null || ontologyderivedproperty.Thru >= (derivedproperty.From ?? DateTime.MinValue))
-                                                select derivedproperty
+                                                from ontologyderivedproperties in propertyresourceontology.Properties.Where(p => p.Tags.Contains("@derive"))
+                                                let properties =
+                                                    from ontologyderivedproperty in ontologyderivedproperties.Properties
+                                                    from derivedproperty in resourcemapping.Properties
+                                                    where ontologyderivedproperty.Name == derivedproperty.Name
+                                                        && ontologyderivedproperty.Tags.All(t => derivedproperty.Tags.Contains(t))
+                                                        && (ontologyderivedproperty.From == null || ontologyderivedproperty.From <= (derivedproperty.Thru ?? DateTime.MaxValue))
+                                                        && (ontologyderivedproperty.Thru == null || ontologyderivedproperty.Thru >= (derivedproperty.From ?? DateTime.MinValue))
+                                                    select derivedproperty
+                                                select new Property {
+                                                    Name = ontologyderivedproperties.Name,
+                                                    Value = properties.SelectMany(p => p.Value)
+                                                }
                                             select new Property {
                                                 Name = resourcemappingontologyproperty.Name,
                                                 Value = (

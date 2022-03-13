@@ -8,9 +8,11 @@ dependencies:
     - field.field.node.resource.resource
     - field.field.node.resource.resourceid
     - field.field.node.resource.resourcetype
+    - field.field.node.resource.tags
     - node.type.resource
   module:
     - paragraphs
+    - path
     - text
 id: node.resource.default
 targetEntityType: node
@@ -19,7 +21,7 @@ mode: default
 content:
   body:
     type: text_textarea
-    weight: 5
+    weight: 6
     region: content
     settings:
       rows: 9
@@ -35,20 +37,26 @@ content:
     third_party_settings: {  }
   created:
     type: datetime_timestamp
-    weight: 7
+    weight: 8
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 13
     region: content
     settings: {  }
     third_party_settings: {  }
   promote:
     type: boolean_checkbox
-    weight: 8
+    weight: 9
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   properties:
     type: entity_reference_paragraphs
-    weight: 11
+    weight: 12
     region: content
     settings:
       title: Paragraph
@@ -86,17 +94,25 @@ content:
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    weight: 10
+    weight: 11
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   sticky:
     type: boolean_checkbox
-    weight: 9
+    weight: 10
     region: content
     settings:
       display_label: true
+    third_party_settings: {  }
+  tags:
+    type: string_textfield
+    weight: 5
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   title:
     type: string_textfield
@@ -108,7 +124,7 @@ content:
     third_party_settings: {  }
   uid:
     type: entity_reference_autocomplete
-    weight: 6
+    weight: 7
     region: content
     settings:
       match_operator: CONTAINS

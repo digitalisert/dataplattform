@@ -21,12 +21,16 @@ source:
       name: type
       label: 'Type'
     3:
+      name: tags
+      label: 'Tags'
+    4:
       name: properties
       label: 'Properties'
 
 process:
   context: context
   resourcetype: type
+  tags: tags
   properties:
     -
       plugin: explode

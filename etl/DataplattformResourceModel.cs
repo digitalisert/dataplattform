@@ -41,6 +41,7 @@ namespace etl
                         Type = node["resourcetype"].Select(t => t["value"].ToString()),
                         Title = node["title"].Select(t => t["value"].ToString()),
                         Body = node["body"].Select(b => b["value"].ToString()),
+                        Tags = node["tags"].Select(t => t["value"].ToString()),
                         Properties =
                             from property in node["properties"]
                             let paragraph = LoadDocument<Drupal>("Dataplattform/Drupal/Paragraph/" + property["target_id"], "Dataplattform")
@@ -69,6 +70,7 @@ namespace etl
                                     {
                                         Context = context["value"].ToString(),
                                         Type = resourceparagraph["resourcetype"].Select(t => t["value"].ToString()),
+                                        Tags = resourceparagraph["tags"].Select(t => t["value"].ToString()),
                                         Properties =
                                             from resourceproperty in resourceparagraph["properties"]
                                             let resourcepropertyparagraph = LoadDocument<Drupal>("Dataplattform/Drupal/Paragraph/" + resourceproperty["target_id"], "Dataplattform")
@@ -110,6 +112,7 @@ namespace etl
                         Type = g.SelectMany(r => r.Type).Distinct(),
                         Title = g.SelectMany(r => r.Title).Distinct(),
                         Body = g.SelectMany(r => r.Body).Distinct(),
+                        Tags = g.SelectMany(r => r.Tags).Distinct(),
                         Properties = (IEnumerable<Property>)Properties(g.SelectMany(r => r.Properties)),
                         Source = g.SelectMany(resource => resource.Source).Distinct(),
                         Modified = g.Select(resource => resource.Modified).Max()

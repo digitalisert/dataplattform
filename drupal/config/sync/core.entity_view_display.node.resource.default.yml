@@ -8,6 +8,7 @@ dependencies:
     - field.field.node.resource.resource
     - field.field.node.resource.resourceid
     - field.field.node.resource.resourcetype
+    - field.field.node.resource.tags
     - node.type.resource
   module:
     - entity_reference_revisions
@@ -23,7 +24,7 @@ content:
     label: above
     settings: {  }
     third_party_settings: {  }
-    weight: 4
+    weight: 5
     region: content
   context:
     type: string
@@ -36,7 +37,7 @@ content:
   links:
     settings: {  }
     third_party_settings: {  }
-    weight: 5
+    weight: 6
     region: content
   properties:
     type: entity_reference_revisions_entity_view
@@ -45,7 +46,7 @@ content:
       view_mode: default
       link: ''
     third_party_settings: {  }
-    weight: 6
+    weight: 7
     region: content
   resource:
     type: entity_reference_label
@@ -70,5 +71,13 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     weight: 3
+    region: content
+  tags:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 4
     region: content
 hidden: {  }

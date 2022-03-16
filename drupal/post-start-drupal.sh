@@ -2,7 +2,13 @@
 
 echo "Post startup"
 
-until [ $(curl -fLSs http://drupal -o /dev/null -w '%{http_code}\n') -eq "200" ] ; do sleep 5; done;
+until [ $(curl -fLSs http://localhost -o /dev/null -w '%{http_code}\n') -eq "200" ]
+do
+  echo "Waiting for Drupal to start..."
+  sleep 1;
+done
+
+echo "Drupal started."
 
 BOOTSTRAP=$(drush core:status --format=string bootstrap)
 

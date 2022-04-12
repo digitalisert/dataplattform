@@ -1,0 +1,10 @@
+name: Iframe Autoresize Module
+description: Aktiverer manglende autoresize i Iframe-modulen
+package: Field types
+
+type: module
+core: 8.x
+core_version_requirement: ^8 || ^9
+
+dependencies:
+  - drupal:iframe

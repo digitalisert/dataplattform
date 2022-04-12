@@ -18,28 +18,32 @@ namespace Digitalisert.Dataplattform.Studio.Controllers
         }
 
         [HttpGet("search/{*pathid}")]
-        public dynamic Search(string pathid, string id, string title, string context )
+        public dynamic Search(string pathid, string urlprefix = null, string defaulttitle = null)
         {
             using(var session = _store.OpenSession())
             {
-                if (!String.IsNullOrWhiteSpace(pathid))
-                {
-                    var contextq = (pathid).Split(new[] { '/', '_' }).FirstOrDefault();
-                    var resoureId = String.Join("/", (pathid).Split(new[] { '/', '_' }).Skip(1));
-                    var query = session
-                        .Query<ResourceModel.Resource, ResourceModel.ResourceIndex>()
-                        .Where(r => r.Context == contextq && r.ResourceId == resoureId)
-                        .Select(r => new {
-                            id = r.Context + "_" + r.ResourceId.Replace("/", "_"),
-                            uuid = r.Context + "/" + r.ResourceId,
-                            title = r.Title.FirstOrDefault(),
-                            context = r.Context,
-                            type = r.Type,
-                        });
+                var contextq = (pathid).Split(new[] { '/', '_' }).FirstOrDefault();
+                var resourceId = String.Join("/", (pathid).Split(new[] { '/', '_' }).Skip(1));
+                var query = session
+                    .Query<ResourceModel.Resource, ResourceModel.ResourceIndex>()
+                    .Where(r => r.Context == contextq && r.ResourceId == resourceId)
+                    .Select(r => new {
+                        id = r.Context + "_" + r.ResourceId.Replace("/", "_"),
+                        uuid = r.Context + "/" + r.ResourceId,
+                        title = r.Code.Select(c => c + " ").FirstOrDefault() + r.Title.FirstOrDefault(),
+                        url = (urlprefix ?? "") + r.Context + "/" + r.ResourceId
+                    });
 
-                    return query.FirstOrDefault();
-                }
-                else if (!String.IsNullOrWhiteSpace(id))
+                return query.FirstOrDefault() ?? new { id = contextq + "_" + resourceId.Replace("/", "_"), uuid = "", title = defaulttitle ?? "", url = "" };
+            }
+        }
+
+        [HttpGet("search")]
+        public dynamic Search(string id, string title, string context, string type)
+        {
+            using(var session = _store.OpenSession())
+            {
+                if (!String.IsNullOrWhiteSpace(id))
                 {
                     var query = session.Advanced.DocumentQuery<ResourceModel.Resource, ResourceModel.ResourceIndex>();
                     foreach(var qid in id.Split(new[] { ','}, StringSplitOptions.RemoveEmptyEntries).Select((v, i) => new { v, i} ))
@@ -56,7 +60,6 @@ namespace Digitalisert.Dataplattform.Studio.Controllers
                     return query.ToQueryable()
                         .Select(r => new {
                             id = r.Context + "_" + r.ResourceId.Replace("/", "_"),
-                            uuid = r.Context + "/" + r.ResourceId,
                             title = r.Title.FirstOrDefault()
                         }).ToList();
                 }
@@ -66,13 +69,15 @@ namespace Digitalisert.Dataplattform.Studio.Controllers
                     if (!String.IsNullOrWhiteSpace(context))
                         query = query.WhereEquals("Context", context);
 
+                    if (!String.IsNullOrWhiteSpace(type))
+                        query = query.WhereEquals("Type", type);
+
                     if (!String.IsNullOrWhiteSpace(title))
                         query = query.WhereStartsWith("Title", title);
 
                     return query.ToQueryable()
                         .Select(r => new {
                             id = r.Context + "_" + r.ResourceId.Replace("/", "_"),
-                            uuid = r.Context + "/" + r.ResourceId,
                             title = r.Title.FirstOrDefault()
                         }).ToList();
                 }

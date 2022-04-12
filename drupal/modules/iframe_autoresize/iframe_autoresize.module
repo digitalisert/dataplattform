@@ -1,0 +1,5 @@
+<?php
+
+function iframe_autoresize_theme_registry_alter(&$theme_registry) {
+  $theme_registry['iframe']['path'] = drupal_get_path('module', 'iframe_autoresize') . '/templates';
+}

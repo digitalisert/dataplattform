@@ -5,14 +5,15 @@ id: norgeskart
 label: Norgeskart
 description: ''
 settings:
+  plugin_type: tilelayer
   urlTemplate: 'https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}'
   attribution: Kartverket
   layer_type: base
   minZoom: '0'
-  maxZoom: '0'
+  maxZoom: '18'
   subdomains: ''
   errorTileUrl: ''
-  zoomOffset: '0'
+  zoomOffset: ''
   tms: 0
   zoomReverse: 0
   detectRetina: 0

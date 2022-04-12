@@ -25,7 +25,7 @@ content:
     label: above
     settings:
       multiple_map: false
-      leaflet_map: 'OSM Mapnik'
+      leaflet_map: norgeskart
       height: 400
       height_unit: px
       hide_empty_map: false

@@ -9,6 +9,7 @@ RUN composer require \
     'drupal/external_entities:2.0-alpha5' \
     'drupal/gin:3.0-beta1' \
     'drupal/gin_toolbar:1.0-beta21' \
+    'drupal/iframe:2.15' \
     'drupal/leaflet:2.1.23' \
     'drupal/leaflet_layers:1.1.1' \
     'drupal/migrate_plus:5.2' \
@@ -39,6 +40,7 @@ RUN chmod +x \
     /usr/local/bin/export.sh
 
 COPY config/sync /opt/drupal/config/sync
+COPY modules/* /opt/drupal/web/modules/custom/
 COPY sites/default/* /opt/drupal/web/sites/default/
 
 ENTRYPOINT ["/usr/local/bin/dataplattform-entrypoint.sh"]

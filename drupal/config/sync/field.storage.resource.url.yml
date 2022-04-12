@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - external_entities
+    - iframe
+id: resource.url
+field_name: url
+entity_type: resource
+type: iframe
+settings: {  }
+module: iframe
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

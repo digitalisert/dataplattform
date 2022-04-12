@@ -15,6 +15,8 @@ field_mapper_config:
       value: uuid
     title:
       value: title
+    url:
+      url: url
 storage_client_id: rest
 storage_client_config:
   endpoint: 'http://studio/Studio/api/Search/search'
@@ -30,7 +32,9 @@ storage_client_config:
     key: ''
   parameters:
     list: {  }
-    single: {  }
+    single:
+      defaulttitle: 'Finnes foreløpig ikke'
+      urlprefix: 'http://localhost/Studio/Resource/'
 persistent_cache_max_age: 0
 annotation_entity_type_id: null
 annotation_bundle_id: null

@@ -1,20 +1,20 @@
-FROM drupal:9.3.7-apache
+FROM drupal:9.3.9-apache
 
 RUN apt-get update -y \
     && apt-get install -y --no-install-recommends git jq unzip \
     && rm -rf /var/lib/apt/lists/*
 
 RUN composer require \
-    'drupal/admin_toolbar:^3.1.0' \
-    'drupal/external_entities:^2.0@alpha' \
-    'drupal/gin:^3.0@beta' \
+    'drupal/admin_toolbar:3.1.0' \
+    'drupal/external_entities:2.0-alpha5' \
+    'drupal/gin:3.0-beta1' \
     'drupal/gin_toolbar:1.0-beta21' \
-    'drupal/leaflet:^2.1' \
+    'drupal/leaflet:2.1.23' \
     'drupal/leaflet_layers:1.1.1' \
-    'drupal/migrate_plus:^5.2' \
-    'drupal/migrate_source_csv:^3.5' \
-    'drupal/migrate_tools:^5.1' \
-    'drupal/paragraphs:^1.13' \
+    'drupal/migrate_plus:5.2' \
+    'drupal/migrate_source_csv:3.5' \
+    'drupal/migrate_tools:5.1' \
+    'drupal/paragraphs:1.13' \
     'drupal/webform:^6.1' \
     'drush/drush'
 

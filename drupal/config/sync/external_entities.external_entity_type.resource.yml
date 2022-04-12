@@ -6,13 +6,15 @@ label: Resource
 label_plural: Resources
 description: ''
 read_only: true
-field_mappings:
-  id:
-    value: id
-  uuid:
-    value: uuid
-  title:
-    value: title
+field_mapper_id: simple
+field_mapper_config:
+  field_mappings:
+    id:
+      value: id
+    uuid:
+      value: uuid
+    title:
+      value: title
 storage_client_id: rest
 storage_client_config:
   endpoint: 'http://studio/Studio/api/Search/search'

@@ -38,6 +38,9 @@ RUN chmod +x \
     /usr/local/bin/post-start-drupal.sh \
     /usr/local/bin/export.sh
 
+COPY config/sync /opt/drupal/config/sync
+COPY sites/default/* /opt/drupal/web/sites/default/
+
 ENTRYPOINT ["/usr/local/bin/dataplattform-entrypoint.sh"]
 
 CMD ["apache2-foreground"]

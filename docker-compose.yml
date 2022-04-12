@@ -78,8 +78,7 @@ services:
       - backend
       - frontend
     volumes:
-      - ./drupal/config/sync:/opt/drupal/config/sync
-      - ./drupal/sites/default/settings.local.php:/opt/drupal/web/sites/default/settings.local.php
+      - ./drupal/config/sync/data:/opt/drupal/config/sync/data
       - drupalexport:/opt/drupal/export
       - drupalfiles:/opt/drupal/web/sites/default/files
     environment:
